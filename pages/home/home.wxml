@@ -1,0 +1,112 @@
+<!-- pages/home/home.wxml -->
+<view class="container">
+  <!-- 有出生信息时：显示个人星盘概览 -->
+  <view wx:if="{{hasBirthInfo && birthInfo}}" class="profile-view">
+    <!-- 用户信息卡片 -->
+    <view class="profile-card">
+      <view class="profile-header">
+        <view class="avatar">
+          <text class="avatar-icon">{{getSunSignSymbol()}}</text>
+        </view>
+        <view class="profile-info">
+          <text class="profile-name">我的星盘</text>
+          <text class="profile-date">{{formatBirthInfo()}}</text>
+        </view>
+        <view class="edit-btn" bind:tap="goToInput">
+          <text class="edit-icon">✏️</text>
+        </view>
+      </view>
+
+      <!-- 核心三星座 -->
+      <view class="core-signs" wx:if="{{chartData}}">
+        <view class="sign-item">
+          <text class="sign-label">太阳</text>
+          <text class="sign-symbol">{{getSunSign().symbol}}</text>
+          <text class="sign-name">{{getSunSign().name}}</text>
+        </view>
+        <view class="sign-item">
+          <text class="sign-label">月亮</text>
+          <text class="sign-symbol">{{getMoonSign().symbol}}</text>
+          <text class="sign-name">{{getMoonSign().name}}</text>
+        </view>
+        <view class="sign-item">
+          <text class="sign-label">上升</text>
+          <text class="sign-symbol">{{getAscSign().symbol}}</text>
+          <text class="sign-name">{{getAscSign().name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快速信息 -->
+    <view class="quick-info" wx:if="{{chartData}}">
+      <view class="info-row">
+        <view class="info-item">
+          <text class="info-value">{{chartData.planets ? chartData.planets.length : 0}}</text>
+          <text class="info-label">行星</text>
+        </view>
+        <view class="info-item">
+          <text class="info-value">12</text>
+          <text class="info-label">宫位</text>
+        </view>
+        <view class="info-item">
+          <text class="info-value">{{chartData.aspects ? chartData.aspects.length : 0}}</text>
+          <text class="info-label">相位</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <view class="action-btn" bind:tap="goToInput">
+        <text class="btn-icon">✏️</text>
+        <text class="btn-text">编辑信息</text>
+      </view>
+      <view class="action-btn primary" bind:tap="goToChart">
+        <text class="btn-icon">⭐</text>
+        <text class="btn-text">查看星盘</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 没有出生信息时：显示欢迎界面 -->
+  <view wx:else class="welcome-view">
+    <view class="welcome-header">
+      <text class="welcome-title">星盘测算系统</text>
+      <text class="welcome-subtitle">探索宇宙，认识自我</text>
+    </view>
+
+    <view class="welcome-content">
+      <view class="welcome-illustration">
+        <text class="illustration-symbol">♈♉♊♋♌♍♎♏♐♑♒♓</text>
+      </view>
+
+      <text class="welcome-desc">
+        输入您的出生信息，生成专属本命星盘，解读行星位置、宫位分布和相位关系
+      </text>
+
+      <view class="create-btn" bind:tap="goToInput">
+        <text class="create-icon">✨</text>
+        <text class="create-text">创建我的星盘</text>
+      </view>
+    </view>
+
+    <view class="feature-hints">
+      <view class="hint-item">
+        <text class="hint-icon">📊</text>
+        <text class="hint-text">精确行星计算</text>
+      </view>
+      <view class="hint-item">
+        <text class="hint-icon">🏠</text>
+        <text class="hint-text">多种宫位制</text>
+      </view>
+      <view class="hint-item">
+        <text class="hint-icon">🔮</text>
+        <text class="hint-text">专业解读</text>
+      </view>
+      <view class="hint-item">
+        <text class="hint-icon">🌍</text>
+        <text class="hint-text">地理位置</text>
+      </view>
+    </view>
+  </view>
+</view>

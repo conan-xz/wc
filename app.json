@@ -1,14 +1,37 @@
 {
   "pages": [
+    "pages/home/home",
     "pages/index/index",
     "pages/astrology-input/astrology-input",
     "pages/astrology-result/astrology-result"
   ],
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "position": "bottom",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "星盘",
+        "iconPath": "images/chat.png",
+        "selectedIconPath": "images/chat-active.png"
+      }
+    ]
+  },
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#07c160",
+    "navigationBarBackgroundColor": "#667eea",
     "navigationBarTitleText": "星盘测算",
-    "navigationBarTextStyle": "white"
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
   },
   "permission": {
     "scope.userLocation": {

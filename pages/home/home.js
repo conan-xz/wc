@@ -1,4 +1,4 @@
-// pages/index/index.js
+// pages/home/home.js
 Page({
   data: {
     messages: [],
@@ -235,15 +235,14 @@ Page({
 
         // 监听消息
         const handleMessage = (res) => {
-          
+    
           clearTimeout(timeout)
 
           try {
             const result = JSON.parse(res.data)
-
             // Check for Julian Day result
-            if (typeof result.result === 'number' || (result && !result.body && !result.house && !result.cusps)) {
-              const jd = typeof result.result === 'number' ? result.result : (result.julianDay || result.jd)
+            if (result.result && typeof result.result === 'number') {
+              const jd = typeof result.result === 'number' ? result.result : (result.result.julianDay || result.result.jd)
               if (jd && jd > 2000000) { // Valid Julian Day range
                 julianDay = jd
 
@@ -266,8 +265,8 @@ Page({
             }
 
             // Check for planet result
-            if (result && result.body && result.body.position && result.body.position.longitude) {
-              const planetId = parseInt(result.body.id)
+            if (result.result && result.result.body && result.result.body.position && result.result.body.position.longitude) {
+              const planetId = parseInt(result.result.body.id)
               const planetInfo = PLANET_IDS.find(p => p.id === planetId)
               if (planetInfo) {
                 // 检查是否已经收到过这颗行星
@@ -276,8 +275,8 @@ Page({
                   return
                 }
 
-                const longitude = result.body.position.longitude.decimalDegree ||
-                                  result.body.position.longitude
+                const longitude = result.result.body.position.longitude.decimalDegree ||
+                result.result.body.position.longitude
 
                 planets.push({
                   name: planetInfo.name,
@@ -290,10 +289,9 @@ Page({
             }
 
             // Check for house result
-            if (result && (result.cusps || result.house)) {
+            if (result.result && (result.result.cusps || result.result.house)) {
               housesReceived = true
-              const cusps = result.cusps || result.house
-
+              const cusps = result.result.cusps || result.result.house
               // swe_houses returns cusps[0] as unused, cusps[1-12] are house cusps
               // ascmc[0] = ASC, ascmc[1] = MC
               let houses = []
@@ -311,9 +309,9 @@ Page({
                 }
               }
 
-              if (result.ascmc) {
-                ascendant = result.ascmc[0] || houses[0] || 0
-                midheaven = result.ascmc[1] || houses[9] || 0
+              if (result.result.ascmc) {
+                ascendant = result.result.ascmc[0] || houses[0] || 0
+                midheaven = result.result.ascmc[1] || houses[9] || 0
               } else {
                 ascendant = houses[0] || 0
                 midheaven = houses[9] || 0
@@ -326,7 +324,6 @@ Page({
             // Check if we have all data
             if (planets.length === PLANET_IDS.length && housesReceived && housesData) {
               clearTimeout(timeout)
-              socketTask.offMessage(handleMessage)
 
               // Calculate aspects
               const aspects = calculateAspects(planets)
@@ -352,11 +349,10 @@ Page({
           } catch (e) {
             reject(e)
           } finally {
-            console.log("index.vue socketTask check", planets.length, housesReceived, housesData)
-            if (planets.length >= PLANET_IDS.length && !housesReceived && !housesData) {
-              // Only close if we haven't resolved yet
+            if (planets.length === PLANET_IDS.length && housesReceived && housesData) {
+              // 关闭连接
               socketTask.close()
-              console.log("index.vue socketTask.close()")
+              console.log("home.vue socketTask.close()")
             }
           }
         }
@@ -367,7 +363,6 @@ Page({
         // 监听失败
         socketTask.onError((err) => {
           clearTimeout(timeout)
-          socketTask.offMessage(handleMessage)
           reject(err)
           socketTask.close()
         })
@@ -381,7 +376,7 @@ Page({
               "data": [request] // 注意：这里必须还是数组格式，哪怕只有一个元素
             })
           });
-        });
+        })
 
         // 2. 单独发送 julday 请求
         socketTask.send({
@@ -389,7 +384,7 @@ Page({
             "type": "swisseph",
             "data": [juldayRequest] // 包装成单元素数组
           })
-        });
+        })
       } catch (error) {
         reject(error)
       }
@@ -510,182 +505,8 @@ Page({
     })
   },
 
-  // 连接云服务
-  connectCloud() {
-    if (this.data.connected) {
-      wx.showToast({
-        title: '已连接',
-        icon: 'none'
-      })
-      return
-    }
-
-    this.addSystemMessage('正在连接云服务...')
-    wx.showLoading({
-      title: '连接中...',
-      mask: true
-    })
-
-    wx.cloud.connectContainer({
-      config: {
-        env: this.data.envName
-      },
-      service: this.data.serviceName,
-      path: '/ws'
-    })
-      .then(({ socketTask }) => {
-        wx.hideLoading()
-        this.setData({ socketTask, connected: true })
-
-        this.addSystemMessage('✅ 连接成功')
-
-        // 监听消息
-        socketTask.onMessage((res) => {
-          this.addMessage('收到: ' + res.data, 'received')
-        })
-
-        // 连接打开
-        socketTask.onOpen((res) => {
-          this.addSystemMessage('WebSocket 已打开')
-          // 发送初始消息（空消息）
-          socketTask.send({ data: '' })
-        })
-
-        // 连接关闭
-        socketTask.onClose((res) => {
-          this.addSystemMessage('❌ 连接已断开')
-          this.setData({ connected: false, socketTask: null })
-        })
-
-        // 连接错误
-        socketTask.onError((err) => {
-          this.addSystemMessage('❌ 连接错误: ' + JSON.stringify(err))
-          wx.hideLoading()
-          wx.showToast({
-            title: '连接失败',
-            icon: 'none'
-          })
-          this.setData({ connected: false, socketTask: null })
-        })
-      })
-      .catch(err => {
-        wx.hideLoading()
-        this.addSystemMessage('❌ 连接失败: ' + JSON.stringify(err))
-        wx.showToast({
-          title: '连接失败',
-          icon: 'none'
-        })
-      })
-  },
-
-  // 断开连接
-  disconnect() {
-    if (!this.data.connected) {
-      wx.showToast({
-        title: '未连接',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (this.data.socketTask) {
-      this.data.socketTask.close({
-        success: () => {
-          this.addSystemMessage('已断开连接')
-          this.setData({ connected: false, socketTask: null })
-        },
-        fail: (err) => {
-          console.error('断开连接失败', err)
-        }
-      })
-    }
-  },
-
-  // 发送消息
-  sendMessage() {
-    if (!this.data.connected) {
-      wx.showToast({
-        title: '请先连接',
-        icon: 'none'
-      })
-      return
-    }
-
-    const message = this.data.inputMessage.trim()
-    if (!message) {
-      wx.showToast({
-        title: '消息不能为空',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (this.data.socketTask) {
-      this.data.socketTask.send({
-        data: message,
-        success: () => {
-          this.addMessage('发送: ' + message, 'sent')
-          this.setData({ inputMessage: '' })
-        },
-        fail: (err) => {
-          this.addSystemMessage('❌ 发送失败: ' + JSON.stringify(err))
-        }
-      })
-    }
-  },
-
-  // 输入框变化
-  onInput(e) {
-    this.setData({ inputMessage: e.detail.value })
-  },
-
-  // 添加消息到列表
-  addMessage(text, type = 'system') {
-    const messages = this.data.messages
-    messages.push({
-      text: text,
-      type: type,
-      time: new Date().toLocaleTimeString('zh-CN', { hour12: false })
-    })
-    this.setData({ messages: messages })
-
-    // 滚动到底部
-    wx.nextTick(() => {
-      this.pageScrollToBottom()
-    })
-  },
-
   // 添加系统消息
   addSystemMessage(text) {
-    this.addMessage(text, 'system')
-  },
-
-  // 滚动到底部
-  pageScrollToBottom() {
-    const query = wx.createSelectorQuery().in(this)
-    query.select('#message-list').boundingClientRect()
-    query.selectViewport().scrollOffset()
-    query.exec((res) => {
-      if (res[1] && res[0]) {
-        wx.pageScrollTo({
-          scrollTop: res[1].scrollTop + res[0].height,
-          duration: 100
-        })
-      }
-    })
-  },
-
-  // 清空消息
-  clearMessages() {
-    wx.showModal({
-      title: '确认清空',
-      content: '确定要清空所有消息吗？',
-      success: (res) => {
-        if (res.confirm) {
-          this.setData({ messages: [] })
-          this.addSystemMessage('消息已清空')
-        }
-      }
-    })
+    console.log(text)
   }
 })
