@@ -1,0 +1,431 @@
+/* pages/index/index.wxss */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ===== 星盘首页样式 ===== */
+.profile-view {
+  padding: 30rpx;
+  flex-shrink: 0;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 24rpx;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 48rpx;
+  color: #fff;
+}
+
+.profile-info {
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.profile-name {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.profile-date {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.edit-btn {
+  padding: 16rpx;
+}
+
+.edit-icon {
+  font-size: 36rpx;
+}
+
+.core-signs {
+  display: flex;
+  justify-content: space-around;
+  padding: 24rpx 0;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.sign-item {
+  text-align: center;
+}
+
+.sign-label {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.sign-symbol {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 4rpx;
+}
+
+.sign-name {
+  display: block;
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.quick-info {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.info-item {
+  text-align: center;
+}
+
+.info-value {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.info-label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.action-btn.primary {
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+  font-size: 36rpx;
+}
+
+.btn-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* ===== 欢迎界面样式 ===== */
+.welcome-view {
+  padding: 60rpx 40rpx;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.welcome-header {
+  text-align: center;
+  padding: 40rpx 0 60rpx;
+}
+
+.welcome-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.welcome-subtitle {
+  display: block;
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+.welcome-content {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.15);
+  margin-bottom: 48rpx;
+}
+
+.welcome-illustration {
+  margin-bottom: 40rpx;
+}
+
+.illustration-symbol {
+  font-size: 36rpx;
+  letter-spacing: 8rpx;
+  color: #667eea;
+}
+
+.welcome-desc {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 48rpx;
+}
+
+.create-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50rpx;
+  padding: 28rpx 60rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+}
+
+.create-icon {
+  font-size: 40rpx;
+}
+
+.create-text {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.feature-hints {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24rpx;
+  margin-top: 48rpx;
+}
+
+.hint-item {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 30rpx;
+  padding: 16rpx 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.hint-icon {
+  font-size: 28rpx;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #fff;
+}
+
+/* ===== 调试区域样式 ===== */
+.debug-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20rpx;
+  background: white;
+  border-top-left-radius: 40rpx;
+  border-top-right-radius: 40rpx;
+  padding: 30rpx 20rpx 20rpx;
+}
+
+.section-title {
+  text-align: center;
+  padding: 10rpx 0 20rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 15rpx 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 5rpx;
+}
+
+.status-value {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.status-connected {
+  color: #07c160;
+  font-weight: bold;
+}
+
+.status-disconnected {
+  color: #ff4757;
+}
+
+.control-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30rpx;
+}
+
+.btn-disconnected {
+  width: 80%;
+  height: 80rpx;
+  background: #07c160;
+  color: white;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.btn-connected {
+  width: 80%;
+  height: 80rpx;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.message-list {
+  flex: 1;
+  height: 400rpx;
+  background: #f8f9fa;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.message-item {
+  margin-bottom: 15rpx;
+}
+
+.message-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 5rpx;
+}
+
+.message-content {
+  padding: 15rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.message-content.system {
+  background: #e3f2fd;
+  color: #1976d2;
+  margin-left: 20rpx;
+}
+
+.message-content.sent {
+  background: #e8f5e8;
+  color: #2e7d32;
+  margin-left: auto;
+  margin-right: 20rpx;
+  text-align: right;
+}
+
+.message-content.received {
+  background: #fff3e0;
+  color: #ef6c00;
+  margin-right: 20rpx;
+}
+
+.input-area {
+  display: flex;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.input-box {
+  flex: 1;
+  height: 80rpx;
+  padding: 0 20rpx;
+  background: white;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+}
+
+.send-btn {
+  width: 120rpx;
+  height: 80rpx;
+  background: #07c160;
+  color: white;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.clear-btn {
+  width: 120rpx;
+  height: 80rpx;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+}

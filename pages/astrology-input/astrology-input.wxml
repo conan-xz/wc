@@ -1,0 +1,132 @@
+<!-- pages/astrology-input/astrology-input.wxml -->
+<view class="page-container">
+  <view class="card">
+    <view class="card-title">出生信息录入</view>
+
+    <!-- 出生日期 -->
+    <view class="form-item">
+      <text class="form-label">出生日期 *</text>
+      <picker
+        mode="date"
+        value="{{birthDate}}"
+        end="{{currentDate}}"
+        bind:change="onDateChange"
+      >
+        <view class="picker">
+          {{birthDate || '请选择出生日期'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 出生时间 -->
+    <view class="form-item">
+      <text class="form-label">出生时间 *</text>
+      <picker
+        mode="time"
+        value="{{birthTime}}"
+        bind:change="onTimeChange"
+      >
+        <view class="picker">
+          {{birthTime || '请选择出生时间'}}
+        </view>
+      </picker>
+      <view class="time-warning" wx:if="{{timeUncertain}}">
+        <text class="warning-icon">⚠️</text>
+        <text class="warning-text">时间不确定度超过15分钟，可能影响精度</text>
+      </view>
+    </view>
+
+    <!-- 时间不确定度 -->
+    <view class="form-item">
+      <text class="form-label">时间不确定度（可选）</text>
+      <picker
+        mode="selector"
+        range="{{timeUncertaintyOptions}}"
+        bind:change="onUncertaintyChange"
+      >
+        <view class="picker">
+          {{timeUncertaintyOptions[timeUncertaintyIndex] || '不确定'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 出生地点 -->
+    <view class="form-item">
+      <text class="form-label">出生地点 *</text>
+      <view class="location-input-wrapper">
+        <input
+          class="form-input"
+          type="text"
+          placeholder="输入城市名称"
+          value="{{searchQuery}}"
+          bind:input="onSearchInput"
+        />
+        <button class="search-btn" bind:tap="searchCity">搜索</button>
+      </view>
+    </view>
+
+    <!-- 城市搜索结果 -->
+    <view class="city-results" wx:if="{{cityResults.length > 0}}">
+      <view
+        class="city-item"
+        wx:for="{{cityResults}}"
+        wx:key="index"
+        bind:tap="selectCity"
+        data-city="{{item}}"
+      >
+        <view class="city-info">
+          <text class="city-name">{{item.name}}</text>
+          <text class="city-detail">{{item.country}}</text>
+        </view>
+        <view class="city-coords">
+          <text class="coords-text">{{formatCoords(item.lat, item.lng)}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已选地点 -->
+    <view class="selected-location" wx:if="{{location.city}}">
+      <view class="location-info">
+        <text class="location-icon">📍</text>
+        <view class="location-detail">
+          <text class="location-city">{{location.city}}</text>
+          <text class="location-coords">{{formatCoords(location.lat, location.lng)}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 时区 -->
+    <view class="form-item" wx:if="{{timeZone}}">
+      <text class="form-label">时区</text>
+      <view class="timezone-display">
+        <text>UTC{{timeZone >= 0 ? '+' : ''}}{{timeZone}}</text>
+        <text class="timezone-name">{{timeZoneName}}</text>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button class="btn btn-primary btn-block btn-large" bind:tap="submit">
+      生成星盘
+    </button>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="card" wx:if="{{history.length > 0}}">
+    <view class="card-title">历史记录</view>
+    <view class="history-list">
+      <view
+        class="history-item"
+        wx:for="{{history}}"
+        wx:key="index"
+        bind:tap="useHistory"
+        data-item="{{item}}"
+      >
+        <view class="history-info">
+          <text class="history-date">{{formatDate(item.birthDate)}}</text>
+          <text class="history-time">{{item.birthTime}}</text>
+          <text class="history-location">{{item.location.city}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
