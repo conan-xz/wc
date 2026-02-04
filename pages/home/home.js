@@ -11,11 +11,11 @@ Page({
     hasBirthInfo: false,
     birthInfo: null,
     chartData: null,
-    isLoading: false
+    isLoading: false,
+    isLoadingChart: false
   },
 
   onLoad() {
-    this.addSystemMessage('小程序已加载，点击连接按钮开始连接云服务')
     this.loadBirthInfo()
   },
 
@@ -34,6 +34,11 @@ Page({
       if (birthInfo && !chartData) {
         // 如果有出生信息但没有星盘数据，则尝试加载
         this.loadChartData()
+      } else if (birthInfo && chartData) {
+        // 如果已经有星盘数据，直接绘制
+        setTimeout(() => {
+          this.drawStarChart()
+        }, 300)
       }
     } catch (e) {
       console.error('加载出生信息失败:', e)
@@ -70,6 +75,11 @@ Page({
 
       // 保存到本地存储
       wx.setStorageSync('chartData', chartData)
+
+      // 绘制星盘
+      setTimeout(() => {
+        this.drawStarChart()
+      }, 300)
     } catch (error) {
       console.error('加载星盘数据失败:', error)
     } finally {
@@ -491,22 +501,169 @@ Page({
     return zodiacSigns[signIndex] || { name: '未知', symbol: '?' }
   },
 
-  // 新增：跳转到输入页面
-  goToInput() {
-    wx.navigateTo({
-      url: '/pages/astrology-input/astrology-input'
-    })
-  },
+  // 新增：绘制星盘
+  drawStarChart() {
+    const query = wx.createSelectorQuery().in(this)
+    query.select('#starChart').boundingClientRect()
+    query.exec((res) => {
+      if (res[0]) {
+        const width = res[0].width
+        const height = res[0].height
 
-  // 新增：跳转到星盘页面
-  goToChart() {
-    wx.navigateTo({
-      url: '/pages/astrology-result/astrology-result'
-    })
-  },
+        const ctx = wx.createCanvasContext('starChart', this)
+        const size = Math.min(width, height)
+        const centerX = size / 2
+        const centerY = size / 2
+        const radiusOuter = size * 0.42  // 减小外圆半径
+        const radiusInner = size * 0.32
+        const radiusCenter = size * 0.25
+        const houseRadius = size * 0.37
 
-  // 添加系统消息
-  addSystemMessage(text) {
-    console.log(text)
+        ctx.setFillStyle('#1a1a2e')
+        ctx.fillRect(0, 0, size, size)
+        ctx.draw()
+
+        // 绘制外圆 - 星座圈
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radiusOuter, 0, 2 * Math.PI)
+        ctx.setStrokeStyle('#3a3a5a')
+        ctx.setLineWidth(1)
+        ctx.stroke()
+
+        // 绘制内圆 - 宫位圈
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radiusInner, 0, 2 * Math.PI)
+        ctx.setStrokeStyle('#3a3a5a')
+        ctx.setLineWidth(1)
+        ctx.stroke()
+
+        // 绘制中心圆
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radiusCenter, 0, 2 * Math.PI)
+        ctx.setStrokeStyle('#808080')
+        ctx.setLineWidth(1)
+        ctx.stroke()
+
+        // 绘制12宫位线
+        const { chartData } = this.data
+        if (chartData && chartData.houses && chartData.houses.length >= 12) {
+          for (let i = 0; i < 12; i++) {
+            const angle = (chartData.houses[i] - 90) * Math.PI / 180
+            const x1 = centerX + Math.cos(angle) * (radiusOuter - size * 0.03)
+            const y1 = centerY + Math.sin(angle) * (radiusOuter - size * 0.03)
+            const x2 = centerX + Math.cos(angle) * radiusCenter
+            const y2 = centerY + Math.sin(angle) * radiusCenter
+
+            ctx.beginPath()
+            ctx.moveTo(x1, y1)
+            ctx.lineTo(x2, y2)
+            ctx.setStrokeStyle('#3a3a5a')
+            ctx.setLineWidth(1)
+            ctx.stroke()
+
+            // 绘制宫位数字
+            const textAngle = angle + Math.PI / 12
+            const textX = centerX + Math.cos(textAngle) * houseRadius
+            const textY = centerY + Math.sin(textAngle) * houseRadius
+
+            ctx.setFontSize(size * 0.033)
+            ctx.setFillStyle('#ccc')
+            ctx.setTextAlign('center')
+            ctx.setTextBaseline('middle')
+            ctx.fillText(`${i + 1}`, textX, textY)
+          }
+        }
+
+        // 绘制上升点 (ASC)
+        if (chartData && chartData.ascendant) {
+          const ascAngle = (chartData.ascendant - 90) * Math.PI / 180
+          const ascX1 = centerX + Math.cos(ascAngle) * radiusOuter
+          const ascY1 = centerY + Math.sin(ascAngle) * radiusOuter
+          const ascX2 = centerX + Math.cos(ascAngle) * (radiusCenter - size * 0.02)
+          const ascY2 = centerY + Math.sin(ascAngle) * (radiusCenter - size * 0.02)
+
+          ctx.beginPath()
+          ctx.moveTo(ascX1, ascY1)
+          ctx.lineTo(ascX2, ascY2)
+          ctx.setStrokeStyle('#ffcc00')
+          ctx.setLineWidth(3)
+          ctx.stroke()
+
+          // 绘制 ASC 标记
+          const ascTextX = centerX + Math.cos(ascAngle) * (radiusCenter - size * 0.05)
+          const ascTextY = centerY + Math.sin(ascAngle) * (radiusCenter - size * 0.05)
+          ctx.setFontSize(size * 0.03)
+          ctx.setFillStyle('#ffcc00')
+          ctx.setTextAlign('center')
+          ctx.setTextBaseline('middle')
+          ctx.fillText('ASC', ascTextX, ascTextY)
+        }
+
+        // 绘制中天 (MC)
+        if (chartData && chartData.midheaven) {
+          const mcAngle = (chartData.midheaven - 90) * Math.PI / 180
+          const mcX1 = centerX + Math.cos(mcAngle) * radiusOuter
+          const mcY1 = centerY + Math.sin(mcAngle) * radiusOuter
+          const mcX2 = centerX + Math.cos(mcAngle) * (radiusCenter - size * 0.02)
+          const mcY2 = centerY + Math.sin(mcAngle) * (radiusCenter - size * 0.02)
+
+          ctx.beginPath()
+          ctx.moveTo(mcX1, mcY1)
+          ctx.lineTo(mcX2, mcY2)
+          ctx.setStrokeStyle('#00ccff')
+          ctx.setLineWidth(3)
+          ctx.stroke()
+
+          // 绘制 MC 标记
+          const mcTextX = centerX + Math.cos(mcAngle) * (radiusCenter - size * 0.05)
+          const mcTextY = centerY + Math.sin(mcAngle) * (radiusCenter - size * 0.05)
+          ctx.setFontSize(size * 0.03)
+          ctx.setFillStyle('#00ccff')
+          ctx.setTextAlign('center')
+          ctx.setTextBaseline('middle')
+          ctx.fillText('MC', mcTextX, mcTextY)
+        }
+
+        // 绘制行星
+        if (chartData && chartData.planets) {
+          chartData.planets.forEach(planet => {
+            const angle = (planet.degree - 90) * Math.PI / 180
+            const planetRadius = (radiusInner + radiusCenter) / 2
+            const x = centerX + Math.cos(angle) * planetRadius
+            const y = centerY + Math.sin(angle) * planetRadius
+
+            ctx.setFontSize(size * 0.04)
+            ctx.setFillStyle('#fff')
+            ctx.setTextAlign('center')
+            ctx.setTextBaseline('middle')
+            ctx.fillText(planet.symbol, x, y)
+          })
+        }
+
+        // 绘制黄道十二宫符号
+        for (let i = 0; i < 12; i++) {
+          const signAngle = (i * 30 - 90) * Math.PI / 180
+          const signRadius = radiusOuter + size * 0.033
+          const x = centerX + Math.cos(signAngle) * signRadius
+          const y = centerY + Math.sin(signAngle) * signRadius
+
+          const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+          ctx.setFontSize(size * 0.033)
+          ctx.setFillStyle('#ccc')
+          ctx.setTextAlign('center')
+          ctx.setTextBaseline('middle')
+          ctx.fillText(zodiacSigns[i], x, y)
+        }
+
+        // 绘制标题
+        ctx.setFontSize(size * 0.047)
+        ctx.setFillStyle('#fff')
+        ctx.setTextAlign('center')
+        ctx.setTextBaseline('top')
+        ctx.fillText('我的星盘', centerX, size * 0.033)
+
+        ctx.draw()
+      }
+    })
   }
 })

@@ -55,6 +55,16 @@
       </view>
     </view>
 
+    <!-- 星盘图 -->
+    <view class="chart-container" wx:if="{{chartData && !isLoadingChart}}">
+      <canvas
+        canvas-id="starChart"
+        id="starChart"
+        class="star-chart"
+        bind:tap="goToChart"
+      ></canvas>
+    </view>
+
     <!-- 操作按钮 -->
     <view class="action-buttons">
       <view class="action-btn" bind:tap="goToInput">
