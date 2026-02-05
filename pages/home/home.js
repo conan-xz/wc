@@ -261,7 +261,7 @@ Page({
                   type: 'swisseph',
                   data: [{
                     func: 'swe_houses',
-                    args: [{julianDay, lat, lng, houseSystemCode}]
+                    args: [julianDay, lat, lng, houseSystemCode]
                   }]
                 }
 
@@ -519,96 +519,157 @@ Page({
         const radiusCenter = size * 0.25
         const houseRadius = size * 0.37
 
-        // 绘制背景 - 深蓝色星空
-        const gradient = ctx.createLinearGradient(0, 0, size, size)
-        gradient.addColorStop(0, '#0a0e27')
-        gradient.addColorStop(1, '#0d1136')
-        ctx.setFillStyle(gradient)
+        // 绘制星空背景
+        ctx.setFillStyle('#0f172a') // slate-900
         ctx.fillRect(0, 0, size, size)
 
-        // 绘制12星座背景扇形（参考图片的配色）
-        const zodiacColors = [
-          '#ff6b6b', // 白羊座 - 红色
-          '#ffd166', // 金牛座 - 黄色
-          '#06d6a0', // 双子座 - 绿色
-          '#118ab2', // 巨蟹座 - 青色
-          '#ef476f', // 狮子座 - 粉红
-          '#073b4c', // 处女座 - 深蓝
-          '#6c5ce7', // 天秤座 - 紫色
-          '#a29bfe', // 天蝎座 - 淡紫
-          '#00cec9', // 射手座 - 青绿
-          '#2d3436', // 摩羯座 - 灰黑
-          '#fd79a8', // 水瓶座 - 粉色
-          '#6c5ce7'  // 双鱼座 - 紫色
-        ]
+        // 绘制深邃星云渐变
+        const nebulaGradient = ctx.createLinearGradient(0, 0, size, size)
+        nebulaGradient.addColorStop(0, 'rgba(30, 58, 138, 0.15)') // blue-900
+        nebulaGradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.08)') // blue-500
+        nebulaGradient.addColorStop(1, 'rgba(79, 70, 229, 0.12)') // indigo-600
+        ctx.setFillStyle(nebulaGradient)
+        ctx.fillRect(0, 0, size, size)
 
-        for (let i = 0; i < 12; i++) {
-          const startAngle = (i * 30 - 90) * Math.PI / 180
-          const endAngle = ((i + 1) * 30 - 90) * Math.PI / 180
+        // 添加星辰点缀（背景星点）
+        ctx.setFillStyle('rgba(255, 255, 255, 0.6)')
+        for (let i = 0; i < 80; i++) {
+          const starAngle = Math.random() * 2 * Math.PI
+          const starRadius = Math.random() * radiusOuter * 0.9
+          const starX = centerX + Math.cos(starAngle) * starRadius
+          const starY = centerY + Math.sin(starAngle) * starRadius
+          const starSize = 0.3 + Math.random() * 0.8
 
           ctx.beginPath()
-          ctx.moveTo(centerX, centerY)
-          ctx.arc(centerX, centerY, radiusOuter + size * 0.02, startAngle, endAngle)
-          ctx.closePath()
-          ctx.setFillStyle(zodiacColors[i])
-          ctx.setGlobalAlpha(0.15)
+          ctx.arc(starX, starY, starSize, 0, 2 * Math.PI)
           ctx.fill()
-          ctx.setGlobalAlpha(1.0)
         }
 
-        // 绘制外圆 - 星座圈（带光晕）
+        // 绘制星座扇形背景（柔和的色块）
+        if (chartData && chartData.ascendant !== undefined) {
+          const zodiacColors = [
+            'rgba(255, 107, 107, 0.06)', // 白羊
+            'rgba(255, 209, 102, 0.06)', // 金牛
+            'rgba(6, 214, 160, 0.06)',   // 双子
+            'rgba(17, 138, 178, 0.06)',  // 巨蟹
+            'rgba(239, 71, 111, 0.06)',  // 狮子
+            'rgba(7, 59, 76, 0.06)',     // 处女
+            'rgba(108, 92, 231, 0.06)',  // 天秤
+            'rgba(162, 155, 254, 0.06)', // 天蝎
+            'rgba(0, 206, 201, 0.06)',   // 射手
+            'rgba(45, 52, 54, 0.06)',    // 摩羯
+            'rgba(253, 121, 168, 0.06)', // 水瓶
+            'rgba(138, 43, 226, 0.06)'   // 双鱼
+          ]
+
+          // 从 DSC (ASC + 180°) 开始，顺时针排列
+          const dscDeg = (chartData.ascendant + 180) % 360
+
+          for (let i = 0; i < 12; i++) {
+            const startDeg = (dscDeg - i * 30 + 360) % 360
+            const endDeg = (startDeg - 30 + 360) % 360
+
+            const startAngle = (startDeg - 90) * Math.PI / 180
+            const endAngle = (endDeg - 90) * Math.PI / 180
+
+            ctx.beginPath()
+            ctx.moveTo(centerX, centerY)
+            ctx.arc(centerX, centerY, radiusOuter - size * 0.02, startAngle, endAngle, true)
+            ctx.closePath()
+            ctx.setFillStyle(zodiacColors[i])
+            ctx.fill()
+          }
+        }
+
+        // 绘制外圆 - 星座圈（精致的蓝色边框）
         ctx.beginPath()
         ctx.arc(centerX, centerY, radiusOuter, 0, 2 * Math.PI)
-        ctx.setStrokeStyle('#4d80e4')
+        ctx.setStrokeStyle('rgba(96, 165, 250, 0.7)') // blue-400
         ctx.setLineWidth(2)
+        ctx.stroke()
+
+        // 外圆光晕效果
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radiusOuter, 0, 2 * Math.PI)
+        ctx.setStrokeStyle('rgba(96, 165, 250, 0.2)')
+        ctx.setLineWidth(8)
         ctx.stroke()
 
         // 绘制内圆 - 宫位圈
         ctx.beginPath()
         ctx.arc(centerX, centerY, radiusInner, 0, 2 * Math.PI)
-        ctx.setStrokeStyle('#2c5282')
-        ctx.setLineWidth(1)
+        ctx.setStrokeStyle('rgba(79, 70, 229, 0.6)') // indigo-600
+        ctx.setLineWidth(1.5)
         ctx.stroke()
 
-        // 绘制中心圆（带光晕）
+        // 绘制中心圆
         ctx.beginPath()
         ctx.arc(centerX, centerY, radiusCenter, 0, 2 * Math.PI)
-        ctx.setStrokeStyle('#3b82f6')
+        ctx.setStrokeStyle('rgba(59, 130, 246, 0.8)') // blue-500
         ctx.setLineWidth(2)
         ctx.stroke()
 
-        // 中心圆填充 - 渐变（改用简单填充，不支持createRadialGradient）
-        // const centerGradient = ctx.createRadialGradient(
-        //   centerX, centerY, 0,
-        //   centerX, centerY, radiusCenter
-        // )
-        // centerGradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)')
-        // centerGradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)')
-        // ctx.setFillStyle(centerGradient)
-        ctx.setFillStyle('rgba(59, 130, 246, 0.1)')
+        // 中心圆填充 - 柔和光晕
+        ctx.setFillStyle('rgba(59, 130, 246, 0.08)')
         ctx.fill()
 
-        // 绘制12星座分隔线（从中心到外圈）
-        for (let i = 0; i < 12; i++) {
-          const angle = (i * 30 - 90) * Math.PI / 180
-          const x1 = centerX + Math.cos(angle) * radiusCenter * 0.6
-          const y1 = centerY + Math.sin(angle) * radiusCenter * 0.6
-          const x2 = centerX + Math.cos(angle) * (radiusOuter + size * 0.01)
-          const y2 = centerY + Math.sin(angle) * (radiusOuter + size * 0.01)
+        // 绘制 ASC-MC-DSC-IC 轴线（四轴线）
+        if (chartData) {
+          // ASC (上升点)
+          if (chartData.ascendant) {
+            const ascAngle = (chartData.ascendant - 90) * Math.PI / 180
+            const ascX1 = centerX + Math.cos(ascAngle) * radiusOuter
+            const ascY1 = centerY + Math.sin(ascAngle) * radiusOuter
+            const ascX2 = centerX - Math.cos(ascAngle) * radiusOuter
+            const ascY2 = centerY - Math.sin(ascAngle) * radiusOuter
 
-          ctx.beginPath()
-          ctx.moveTo(x1, y1)
-          ctx.lineTo(x2, y2)
-          ctx.setStrokeStyle('rgba(255, 255, 255, 0.1)')
-          ctx.setLineWidth(1)
-          ctx.stroke()
+            ctx.beginPath()
+            ctx.moveTo(ascX1, ascY1)
+            ctx.lineTo(ascX2, ascY2)
+            ctx.setStrokeStyle('#fbbf24')
+            ctx.setLineWidth(2.5)
+            ctx.stroke()
+          }
+
+          // MC (中天)
+          if (chartData.midheaven) {
+            const mcAngle = (chartData.midheaven - 90) * Math.PI / 180
+            const mcX1 = centerX + Math.cos(mcAngle) * radiusOuter
+            const mcY1 = centerY + Math.sin(mcAngle) * radiusOuter
+            const mcX2 = centerX - Math.cos(mcAngle) * radiusOuter
+            const mcY2 = centerY - Math.sin(mcAngle) * radiusOuter
+
+            ctx.beginPath()
+            ctx.moveTo(mcX1, mcY1)
+            ctx.lineTo(mcX2, mcY2)
+            ctx.setStrokeStyle('#06b6d4')
+            ctx.setLineWidth(2.5)
+            ctx.stroke()
+          }
         }
 
-        // 绘制12宫位线（参考图片的淡蓝色）
+        // 绘制12宫位线（参考图片的淡蓝色）- 从 ASC 开始逆时针计数
         const { chartData } = this.data
         if (chartData && chartData.houses && chartData.houses.length >= 12) {
+          // 找到最接近 ASC 的宫位索引作为起始点
+          let startIndex = 0
+          if (chartData.ascendant !== undefined) {
+            let minDiff = 360
+            for (let i = 0; i < 12; i++) {
+              const diff = Math.abs(chartData.houses[i] - chartData.ascendant)
+              if (diff < minDiff) {
+                minDiff = diff
+                startIndex = i
+              }
+            }
+          }
+
+          // 逆时针排列宫位（索引递增，角度顺时针，所以需要反向绘制）
           for (let i = 0; i < 12; i++) {
-            const angle = (chartData.houses[i] - 90) * Math.PI / 180
+            // 宫位索引：从 startIndex 开始，逆时针排列
+            const houseIndex = (startIndex + i) % 12
+
+            const angle = (chartData.houses[houseIndex] - 90) * Math.PI / 180
             const x1 = centerX + Math.cos(angle) * (radiusOuter - size * 0.03)
             const y1 = centerY + Math.sin(angle) * (radiusOuter - size * 0.03)
             const x2 = centerX + Math.cos(angle) * radiusCenter
@@ -617,88 +678,180 @@ Page({
             ctx.beginPath()
             ctx.moveTo(x1, y1)
             ctx.lineTo(x2, y2)
-            ctx.setStrokeStyle('#3b82f6')
+            ctx.setStrokeStyle('rgba(147, 197, 253, 0.8)') // blue-300
             ctx.setLineWidth(1.5)
             ctx.stroke()
 
-            // 绘制宫位数字（浅蓝色）
-            const textAngle = angle + Math.PI / 12
-            const textX = centerX + Math.cos(textAngle) * houseRadius
-            const textY = centerY + Math.sin(textAngle) * houseRadius
+            // 宫位线端点小圆点
+            ctx.beginPath()
+            ctx.arc(x1, y1, size * 0.008, 0, 2 * Math.PI)
+            ctx.setFillStyle('rgba(147, 197, 253, 0.6)')
+            ctx.fill()
 
-            ctx.setFontSize(size * 0.033)
-            ctx.setFillStyle('#93c5fd')
+            // 绘制宫位数字（浅蓝色）- 逆时针排列，数字从 1 开始
+            // 宫位数字放置在宫位中点位置
+            const nextHouseIndex = (houseIndex + 1) % 12
+            const nextAngle = (chartData.houses[nextHouseIndex] - 90) * Math.PI / 180
+
+            // 计算中点角度（需要处理跨越 0° 的情况）
+            let midAngle
+            if (Math.abs(nextAngle - angle) < Math.PI) {
+              midAngle = (angle + nextAngle) / 2
+            } else {
+              // 跨越 0° 的情况
+              midAngle = (angle + nextAngle + 2 * Math.PI) / 2
+              if (midAngle > 2 * Math.PI) midAngle -= 2 * Math.PI
+            }
+
+            const textX = centerX + Math.cos(midAngle) * houseRadius
+            const textY = centerY + Math.sin(midAngle) * houseRadius
+
+            ctx.setFontSize(size * 0.035)
+            ctx.setFillStyle('#e0e7ff') // slate-100
             ctx.setTextAlign('center')
             ctx.setTextBaseline('middle')
+            // 添加文字阴影增强可读性
+            ctx.fillText(`${i + 1}`, textX, textY + 1)
+            ctx.setFillStyle('#93c5fd') // blue-300
             ctx.fillText(`${i + 1}`, textX, textY)
           }
         }
 
-        // 绘制上升点 (ASC) - 金色
+        // 绘制上升点 (ASC) - 金色光晕
         if (chartData && chartData.ascendant) {
           const ascAngle = (chartData.ascendant - 90) * Math.PI / 180
           const ascX1 = centerX + Math.cos(ascAngle) * radiusOuter
           const ascY1 = centerY + Math.sin(ascAngle) * radiusOuter
-          const ascX2 = centerX + Math.cos(ascAngle) * (radiusCenter - size * 0.02)
-          const ascY2 = centerY + Math.sin(ascAngle) * (radiusCenter - size * 0.02)
+          const ascX2 = centerX - Math.cos(ascAngle) * radiusOuter
+          const ascY2 = centerY - Math.sin(ascAngle) * radiusOuter
 
+          // ASC 轴线光晕
           ctx.beginPath()
           ctx.moveTo(ascX1, ascY1)
           ctx.lineTo(ascX2, ascY2)
-          ctx.setStrokeStyle('#fbbf24')
+          ctx.setStrokeStyle('rgba(251, 191, 36, 0.2)') // amber-400
+          ctx.setLineWidth(10)
+          ctx.stroke()
+
+          // ASC 轴线
+          ctx.beginPath()
+          ctx.moveTo(ascX1, ascY1)
+          ctx.lineTo(ascX2, ascY2)
+          ctx.setStrokeStyle('rgba(251, 191, 36, 0.9)') // amber-400
           ctx.setLineWidth(2.5)
           ctx.stroke()
 
-          // ASC 标记背景圆点
+          // ASC 标记圆点（带光晕）
           ctx.beginPath()
-          const ascDotRadius = size * 0.03
+          const ascDotRadius = size * 0.035
+          ctx.arc(ascX1, ascY1, ascDotRadius * 1.5, 0, 2 * Math.PI)
+          ctx.setFillStyle('rgba(251, 191, 36, 0.3)')
+          ctx.fill()
+
+          ctx.beginPath()
+          ctx.arc(ascX1, ascY1, ascDotRadius, 0, 2 * Math.PI)
+          ctx.setFillStyle('#fbbf24') // amber-400
+          ctx.fill()
+
+          // DSC 标记圆点（带光晕）
+          ctx.beginPath()
+          ctx.arc(ascX2, ascY2, ascDotRadius * 1.5, 0, 2 * Math.PI)
+          ctx.setFillStyle('rgba(251, 191, 36, 0.3)')
+          ctx.fill()
+
+          ctx.beginPath()
           ctx.arc(ascX2, ascY2, ascDotRadius, 0, 2 * Math.PI)
           ctx.setFillStyle('#fbbf24')
           ctx.fill()
 
-          // 绘制 ASC 标记（金色）
-          const ascTextX = centerX + Math.cos(ascAngle) * (radiusCenter - size * 0.05)
-          const ascTextY = centerY + Math.sin(ascAngle) * (radiusCenter - size * 0.05)
-          ctx.setFontSize(size * 0.032)
-          ctx.setFillStyle('#fbbf24')
+          // 绘制 ASC 标记（金色，带阴影）
+          const ascTextX = centerX + Math.cos(ascAngle) * (radiusOuter + size * 0.06)
+          const ascTextY = centerY + Math.sin(ascAngle) * (radiusOuter + size * 0.06)
+          ctx.setFontSize(size * 0.035)
+          ctx.setFillStyle('#e0e7ff')
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
+          ctx.fillText('ASC', ascTextX, ascTextY + 1)
+          ctx.setFillStyle('#fbbf24')
           ctx.fillText('ASC', ascTextX, ascTextY)
+
+          // 绘制 DSC 标记（金色）
+          const dscTextX = centerX - Math.cos(ascAngle) * (radiusOuter + size * 0.06)
+          const dscTextY = centerY - Math.sin(ascAngle) * (radiusOuter + size * 0.06)
+          ctx.setFillStyle('#e0e7ff')
+          ctx.fillText('DSC', dscTextX, dscTextY + 1)
+          ctx.setFillStyle('#fbbf24')
+          ctx.fillText('DSC', dscTextX, dscTextY)
         }
 
-        // 绘制中天 (MC) - 青色
+        // 绘制中天 (MC) - 青色光晕
         if (chartData && chartData.midheaven) {
           const mcAngle = (chartData.midheaven - 90) * Math.PI / 180
           const mcX1 = centerX + Math.cos(mcAngle) * radiusOuter
           const mcY1 = centerY + Math.sin(mcAngle) * radiusOuter
-          const mcX2 = centerX + Math.cos(mcAngle) * (radiusCenter - size * 0.02)
-          const mcY2 = centerY + Math.sin(mcAngle) * (radiusCenter - size * 0.02)
+          const mcX2 = centerX - Math.cos(mcAngle) * radiusOuter
+          const mcY2 = centerY - Math.sin(mcAngle) * radiusOuter
 
+          // MC 轴线光晕
           ctx.beginPath()
           ctx.moveTo(mcX1, mcY1)
           ctx.lineTo(mcX2, mcY2)
-          ctx.setStrokeStyle('#06b6d4')
+          ctx.setStrokeStyle('rgba(6, 182, 212, 0.2)') // cyan-500
+          ctx.setLineWidth(10)
+          ctx.stroke()
+
+          // MC 轴线
+          ctx.beginPath()
+          ctx.moveTo(mcX1, mcY1)
+          ctx.lineTo(mcX2, mcY2)
+          ctx.setStrokeStyle('rgba(6, 182, 212, 0.9)') // cyan-500
           ctx.setLineWidth(2.5)
           ctx.stroke()
 
-          // MC 标记背景圆点
+          // MC 标记圆点（带光晕）
           ctx.beginPath()
-          const mcDotRadius = size * 0.03
+          const mcDotRadius = size * 0.035
+          ctx.arc(mcX1, mcY1, mcDotRadius * 1.5, 0, 2 * Math.PI)
+          ctx.setFillStyle('rgba(6, 182, 212, 0.3)')
+          ctx.fill()
+
+          ctx.beginPath()
+          ctx.arc(mcX1, mcY1, mcDotRadius, 0, 2 * Math.PI)
+          ctx.setFillStyle('#06b6d4') // cyan-500
+          ctx.fill()
+
+          // IC 标记圆点（带光晕）
+          ctx.beginPath()
+          ctx.arc(mcX2, mcY2, mcDotRadius * 1.5, 0, 2 * Math.PI)
+          ctx.setFillStyle('rgba(6, 182, 212, 0.3)')
+          ctx.fill()
+
+          ctx.beginPath()
           ctx.arc(mcX2, mcY2, mcDotRadius, 0, 2 * Math.PI)
           ctx.setFillStyle('#06b6d4')
           ctx.fill()
 
-          // 绘制 MC 标记（青色）
-          const mcTextX = centerX + Math.cos(mcAngle) * (radiusCenter - size * 0.05)
-          const mcTextY = centerY + Math.sin(mcAngle) * (radiusCenter - size * 0.05)
-          ctx.setFontSize(size * 0.032)
-          ctx.setFillStyle('#06b6d4')
+          // 绘制 MC 标记（青色，带阴影）
+          const mcTextX = centerX + Math.cos(mcAngle) * (radiusOuter + size * 0.06)
+          const mcTextY = centerY + Math.sin(mcAngle) * (radiusOuter + size * 0.06)
+          ctx.setFontSize(size * 0.035)
+          ctx.setFillStyle('#e0e7ff')
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
+          ctx.fillText('MC', mcTextX, mcTextY + 1)
+          ctx.setFillStyle('#06b6d4')
           ctx.fillText('MC', mcTextX, mcTextY)
+
+          // 绘制 IC 标记（青色）
+          const icTextX = centerX - Math.cos(mcAngle) * (radiusOuter + size * 0.06)
+          const icTextY = centerY - Math.sin(mcAngle) * (radiusOuter + size * 0.06)
+          ctx.setFillStyle('#e0e7ff')
+          ctx.fillText('IC', icTextX, icTextY + 1)
+          ctx.setFillStyle('#06b6d4')
+          ctx.fillText('IC', icTextX, icTextY)
         }
 
-        // 绘制行星（白色，带光晕效果）
+        // 绘制行星（白色，带光晕和半透明背景）
         if (chartData && chartData.planets) {
           chartData.planets.forEach(planet => {
             const angle = (planet.degree - 90) * Math.PI / 180
@@ -706,26 +859,66 @@ Page({
             const x = centerX + Math.cos(angle) * planetRadius
             const y = centerY + Math.sin(angle) * planetRadius
 
-            ctx.setFontSize(size * 0.045)
+            // 行星背景光晕（改用简单填充，不支持 createRadialGradient）
+            const planetGlowRadius = size * 0.035
+            ctx.beginPath()
+            ctx.arc(x, y, planetGlowRadius, 0, 2 * Math.PI)
+            ctx.setFillStyle('rgba(255, 255, 255, 0.1)')
+            ctx.fill()
+
+            // 行星符号
+            ctx.setFontSize(size * 0.052)
             ctx.setFillStyle('#ffffff')
             ctx.setTextAlign('center')
             ctx.setTextBaseline('middle')
             ctx.fillText(planet.symbol, x, y)
+
+            // 行星符号外发光（柔和的模糊效果）
+            ctx.setFontSize(size * 0.052)
+            ctx.setFillStyle('rgba(255, 255, 255, 0.25)')
+            for (let dx = -1; dx <= 1; dx++) {
+              for (let dy = -1; dy <= 1; dy++) {
+                if (dx !== 0 || dy !== 0) {
+                  ctx.fillText(planet.symbol, x + dx, y + dy)
+                }
+              }
+            }
           })
         }
 
-        // 绘制黄道十二宫符号（淡蓝色，更大更清晰）
+        // 绘制黄道十二宫符号（柔和白色，带光晕）- 从 DSC 轴开始顺时针排列
+        const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+
+        // 从 DSC 轴（ASC+180°）开始，顺时针排列
+        // DSC 的角度 = ASC + 180°
+        let startAngleDeg = 0
+        if (chartData && chartData.ascendant !== undefined) {
+          startAngleDeg = (chartData.ascendant + 180) % 360
+        }
+
         for (let i = 0; i < 12; i++) {
-          const signAngle = (i * 30 - 90) * Math.PI / 180
-          const signRadius = radiusOuter + size * 0.035
+          // 从 DSC 开始，顺时针增加 30°（实际角度递减，因为 -90° 偏移）
+          const signAngle = (startAngleDeg - i * 30 - 90) * Math.PI / 180
+          const signRadius = radiusOuter + size * 0.04
           const x = centerX + Math.cos(signAngle) * signRadius
           const y = centerY + Math.sin(signAngle) * signRadius
 
-          const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
-          ctx.setFontSize(size * 0.038)
-          ctx.setFillStyle('#60a5fa')
+          // 星座符号背景小圆点
+          ctx.beginPath()
+          ctx.arc(x, y, size * 0.02, 0, 2 * Math.PI)
+          ctx.setFillStyle('rgba(96, 165, 250, 0.15)')
+          ctx.fill()
+
+          // 星座符号（柔和白色）
+          ctx.setFontSize(size * 0.045)
+          ctx.setFillStyle('#cbd5e1') // slate-300
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
+          ctx.fillText(zodiacSigns[i], x, y)
+
+          // 星座符号光晕
+          ctx.setFontSize(size * 0.045)
+          ctx.setFillStyle('rgba(96, 165, 250, 0.3)')
           ctx.fillText(zodiacSigns[i], x, y)
         }
 
@@ -734,12 +927,12 @@ Page({
         ctx.setFillStyle('#ffffff')
         ctx.setTextAlign('center')
         ctx.setTextBaseline('top')
-        ctx.fillText('我的星盘', centerX, size * 0.035)
+        ctx.fillText('', centerX, size * 0.035)
 
         // 标题光晕效果
         ctx.setFontSize(size * 0.045)
         ctx.setFillStyle('rgba(96, 165, 250, 0.3)')
-        ctx.fillText('我的星盘', centerX, size * 0.035)
+        ctx.fillText('', centerX, size * 0.035)
 
         // 添加星辰点缀（小圆点）
         ctx.setFillStyle('#ffffff')

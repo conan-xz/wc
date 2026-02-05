@@ -375,7 +375,7 @@
 .star-chart {
   width: 500rpx;
   height: 500rpx;
-  background: radial-gradient(circle, #0a0e27 0%, #0a0e27 60%, #0a0e27 100%);
+  background: transparent;
   border-radius: 16rpx;
   box-shadow:
     0 4rpx 16rpx rgba(0, 0, 0, 0.5),

@@ -252,7 +252,7 @@ Page({
                   type: 'swisseph',
                   data: [{
                     func: 'swe_houses',
-                    args: [{julianDay, lat, lng, houseSystemCode}]
+                    args: [julianDay, lat, lng, houseSystemCode]
                   }]
                 }
 
