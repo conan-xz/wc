@@ -13,11 +13,28 @@
 }
 
 .profile-card {
-  background: #fff;
+  background: linear-gradient(135deg, #0a0e27 0%, #0d1136 100%);
   border-radius: 24rpx;
   padding: 30rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 8rpx 32rpx rgba(0, 0, 0, 0.5),
+    inset 0 0 40rpx rgba(59, 130, 246, 0.1);
   margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(96, 165, 250, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 85% 70%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+  opacity: 0.7;
 }
 
 .profile-header {
@@ -27,18 +44,22 @@
 }
 
 .avatar {
-  width: 100rpx;
-  height: 100rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(circle, #3b82f6 0%, #1e3a8a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow:
+    0 8rpx 24rpx rgba(59, 130, 246, 0.4),
+    inset 0 0 20rpx rgba(59, 130, 246, 0.3);
 }
 
 .avatar-icon {
-  font-size: 48rpx;
+  font-size: 56rpx;
   color: #fff;
+  text-shadow: 0 0 10rpx rgba(255, 255, 255, 0.5);
 }
 
 .profile-info {
@@ -48,16 +69,17 @@
 
 .profile-name {
   display: block;
-  font-size: 36rpx;
+  font-size: 38rpx;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   margin-bottom: 8rpx;
+  text-shadow: 0 0 10rpx rgba(96, 165, 250, 0.4);
 }
 
 .profile-date {
   display: block;
   font-size: 24rpx;
-  color: #666;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .edit-btn {
@@ -71,40 +93,71 @@
 .core-signs {
   display: flex;
   justify-content: space-around;
-  padding: 24rpx 0;
-  border-top: 1rpx solid #f0f0f0;
+  padding: 30rpx 0 0;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .sign-item {
   text-align: center;
+  position: relative;
+  padding: 16rpx;
+  border-radius: 16rpx;
+  transition: all 0.3s;
+}
+
+.sign-item:active {
+  background: rgba(59, 130, 246, 0.1);
+  transform: scale(0.95);
 }
 
 .sign-label {
   display: block;
-  font-size: 22rpx;
-  color: #999;
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 8rpx;
 }
 
 .sign-symbol {
   display: block;
-  font-size: 48rpx;
+  font-size: 56rpx;
   margin-bottom: 4rpx;
+  color: #fff;
+  text-shadow: 0 0 15rpx rgba(96, 165, 250, 0.6);
 }
 
 .sign-name {
   display: block;
-  font-size: 26rpx;
-  color: #333;
-  font-weight: 500;
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 0 10rpx rgba(96, 165, 250, 0.4);
 }
 
 .quick-info {
-  background: #fff;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10rpx);
   border-radius: 24rpx;
   padding: 24rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 8rpx 32rpx rgba(0, 0, 0, 0.5),
+    inset 0 0 20rpx rgba(64, 128, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  border: 1rpx solid rgba(77, 128, 228, 0.2);
+}
+
+.quick-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(96, 165, 250, 0.1) 0%, transparent 50%);
+  opacity: 0.8;
 }
 
 .info-row {
@@ -118,16 +171,18 @@
 
 .info-value {
   display: block;
-  font-size: 48rpx;
+  font-size: 44rpx;
   font-weight: bold;
-  color: #667eea;
+  color: #60a5fa;
+  text-shadow: 0 0 15rpx rgba(96, 165, 250, 0.5);
 }
 
 .info-label {
   display: block;
   font-size: 24rpx;
-  color: #666;
+  color: rgba(255, 255, 255, 0.85);
   margin-top: 8rpx;
+  font-weight: 500;
 }
 
 .action-buttons {
@@ -138,27 +193,49 @@
 
 .action-btn {
   flex: 1;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(30, 41, 59, 0.6);
+  border: 1rpx solid rgba(77, 128, 228, 0.3);
   border-radius: 16rpx;
   padding: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.3),
+    inset 0 0 10rpx rgba(59, 130, 246, 0.1);
+  transition: all 0.3s;
+}
+
+.action-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
 }
 
 .action-btn.primary {
-  background: #fff;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.3),
+    0 0 24rpx rgba(59, 130, 246, 0.4),
+    inset 0 0 12rpx rgba(255, 255, 255, 0.2);
+}
+
+.action-btn.primary:active {
+  transform: translateY(2rpx);
+  box-shadow:
+    0 2rpx 8rpx rgba(0, 0, 0, 0.2),
+    0 0 16rpx rgba(59, 130, 246, 0.3);
 }
 
 .btn-icon {
   font-size: 36rpx;
+  text-shadow: 0 0 10rpx rgba(255, 255, 255, 0.5);
 }
 
 .btn-text {
   font-size: 28rpx;
-  color: #333;
+  color: #fff;
   font-weight: 500;
 }
 
@@ -262,21 +339,46 @@
 
 /* ===== 星盘图样式 ===== */
 .chart-container {
-  background: #fff;
+  background: rgba(10, 14, 39, 0.95);
+  backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(77, 128, 228, 0.3);
   border-radius: 24rpx;
   padding: 20rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 8rpx 32rpx rgba(0, 0, 0, 0.5),
+    inset 0 0 30rpx rgba(59, 130, 246, 0.1),
+    0 0 40rpx rgba(59, 130, 246, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  position: relative;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(96, 165, 250, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 30% 40%, rgba(96, 165, 250, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 70%, rgba(96, 165, 250, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 90% 60%, rgba(59, 130, 246, 0.06) 0%, transparent 50%);
+  opacity: 0.6;
 }
 
 .star-chart {
   width: 500rpx;
   height: 500rpx;
-  background: #1a1a2e;
+  background: radial-gradient(circle, #0a0e27 0%, #0a0e27 60%, #0a0e27 100%);
   border-radius: 16rpx;
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.5),
+    inset 0 0 40rpx rgba(64, 128, 255, 0.1);
 }
 
