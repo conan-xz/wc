@@ -545,40 +545,35 @@ Page({
           ctx.fill()
         }
 
-        // 绘制星座扇形背景（柔和的色块）
-        if (chartData && chartData.ascendant !== undefined) {
-          const zodiacColors = [
-            'rgba(255, 107, 107, 0.06)', // 白羊
-            'rgba(255, 209, 102, 0.06)', // 金牛
-            'rgba(6, 214, 160, 0.06)',   // 双子
-            'rgba(17, 138, 178, 0.06)',  // 巨蟹
-            'rgba(239, 71, 111, 0.06)',  // 狮子
-            'rgba(7, 59, 76, 0.06)',     // 处女
-            'rgba(108, 92, 231, 0.06)',  // 天秤
-            'rgba(162, 155, 254, 0.06)', // 天蝎
-            'rgba(0, 206, 201, 0.06)',   // 射手
-            'rgba(45, 52, 54, 0.06)',    // 摩羯
-            'rgba(253, 121, 168, 0.06)', // 水瓶
-            'rgba(138, 43, 226, 0.06)'   // 双鱼
-          ]
+        // 绘制星座扇形背景（柔和的色块）- 固定从 0° 开始，逆时针排列（倒序：双鱼→白羊）
+        const zodiacColors = [
+          'rgba(138, 43, 226, 0.06)',   // 双鱼 330°
+          'rgba(253, 121, 168, 0.06)', // 水瓶 300°
+          'rgba(45, 52, 54, 0.06)',    // 摩羯 270°
+          'rgba(0, 206, 201, 0.06)',   // 射手 240°
+          'rgba(162, 155, 254, 0.06)', // 天蝎 210°
+          'rgba(108, 92, 231, 0.06)',  // 天秤 180°
+          'rgba(7, 59, 76, 0.06)',     // 处女 150°
+          'rgba(239, 71, 111, 0.06)',  // 狮子 120°
+          'rgba(17, 138, 178, 0.06)',  // 巨蟹 90°
+          'rgba(6, 214, 160, 0.06)',   // 双子 60°
+          'rgba(255, 209, 102, 0.06)', // 金牛 30°
+          'rgba(255, 107, 107, 0.06)'  // 白羊 0°
+        ]
 
-          // 从 DSC (ASC + 180°) 开始，顺时针排列
-          const dscDeg = (chartData.ascendant + 180) % 360
+        for (let i = 0; i < 12; i++) {
+          const startDeg = i * 30
+          const endDeg = (i + 1) * 30
 
-          for (let i = 0; i < 12; i++) {
-            const startDeg = (dscDeg - i * 30 + 360) % 360
-            const endDeg = (startDeg - 30 + 360) % 360
+          const startAngle = startDeg * Math.PI / 180
+          const endAngle = endDeg * Math.PI / 180
 
-            const startAngle = (startDeg - 90) * Math.PI / 180
-            const endAngle = (endDeg - 90) * Math.PI / 180
-
-            ctx.beginPath()
-            ctx.moveTo(centerX, centerY)
-            ctx.arc(centerX, centerY, radiusOuter - size * 0.02, startAngle, endAngle, true)
-            ctx.closePath()
-            ctx.setFillStyle(zodiacColors[i])
-            ctx.fill()
-          }
+          ctx.beginPath()
+          ctx.moveTo(centerX, centerY)
+          ctx.arc(centerX, centerY, radiusOuter - size * 0.02, startAngle, endAngle, false)
+          ctx.closePath()
+          ctx.setFillStyle(zodiacColors[i])
+          ctx.fill()
         }
 
         // 绘制外圆 - 星座圈（精致的蓝色边框）
@@ -617,7 +612,7 @@ Page({
         if (chartData) {
           // ASC (上升点)
           if (chartData.ascendant) {
-            const ascAngle = (chartData.ascendant - 90) * Math.PI / 180
+            const ascAngle = (chartData.ascendant) * Math.PI / 180
             const ascX1 = centerX + Math.cos(ascAngle) * radiusOuter
             const ascY1 = centerY + Math.sin(ascAngle) * radiusOuter
             const ascX2 = centerX - Math.cos(ascAngle) * radiusOuter
@@ -633,7 +628,7 @@ Page({
 
           // MC (中天)
           if (chartData.midheaven) {
-            const mcAngle = (chartData.midheaven - 90) * Math.PI / 180
+            const mcAngle = (chartData.midheaven) * Math.PI / 180
             const mcX1 = centerX + Math.cos(mcAngle) * radiusOuter
             const mcY1 = centerY + Math.sin(mcAngle) * radiusOuter
             const mcX2 = centerX - Math.cos(mcAngle) * radiusOuter
@@ -648,37 +643,24 @@ Page({
           }
         }
 
-        // 绘制12宫位线（参考图片的淡蓝色）- 从 ASC 开始逆时针计数
+        // 绘制12宫位线 - 从 ASC 开始顺时针编号 1-12
         const { chartData } = this.data
         if (chartData && chartData.houses && chartData.houses.length >= 12) {
-          // 找到最接近 ASC 的宫位索引作为起始点
-          let startIndex = 0
-          if (chartData.ascendant !== undefined) {
-            let minDiff = 360
-            for (let i = 0; i < 12; i++) {
-              const diff = Math.abs(chartData.houses[i] - chartData.ascendant)
-              if (diff < minDiff) {
-                minDiff = diff
-                startIndex = i
-              }
-            }
-          }
-
-          // 逆时针排列宫位（索引递增，角度顺时针，所以需要反向绘制）
+          // houses[0] = ASC = 1宫起点，houses[1] = 2宫起点，以此类推
+          // 从 ASC 开始，顺时针排列（索引递减）
           for (let i = 0; i < 12; i++) {
-            // 宫位索引：从 startIndex 开始，逆时针排列
-            const houseIndex = (startIndex + i) % 12
-
-            const angle = (chartData.houses[houseIndex] - 90) * Math.PI / 180
+            const houseIndex = (12 - i) % 12  // 0, 11, 10, 9, ..., 1
+            const angle = chartData.houses[houseIndex] * Math.PI / 180
             const x1 = centerX + Math.cos(angle) * (radiusOuter - size * 0.03)
             const y1 = centerY + Math.sin(angle) * (radiusOuter - size * 0.03)
             const x2 = centerX + Math.cos(angle) * radiusCenter
             const y2 = centerY + Math.sin(angle) * radiusCenter
 
+            // 宫位线
             ctx.beginPath()
             ctx.moveTo(x1, y1)
             ctx.lineTo(x2, y2)
-            ctx.setStrokeStyle('rgba(147, 197, 253, 0.8)') // blue-300
+            ctx.setStrokeStyle('rgba(147, 197, 253, 0.8)')
             ctx.setLineWidth(1.5)
             ctx.stroke()
 
@@ -688,17 +670,16 @@ Page({
             ctx.setFillStyle('rgba(147, 197, 253, 0.6)')
             ctx.fill()
 
-            // 绘制宫位数字（浅蓝色）- 逆时针排列，数字从 1 开始
-            // 宫位数字放置在宫位中点位置
-            const nextHouseIndex = (houseIndex + 1) % 12
-            const nextAngle = (chartData.houses[nextHouseIndex] - 90) * Math.PI / 180
+            // 宫位数字（顺时针排列）
+            const nextIndex = (houseIndex + 11) % 12  // 顺时针的下一个宫位
+            const nextAngle = chartData.houses[nextIndex] * Math.PI / 180
 
-            // 计算中点角度（需要处理跨越 0° 的情况）
+            // 计算中点角度
             let midAngle
-            if (Math.abs(nextAngle - angle) < Math.PI) {
+            const diff = Math.abs(nextAngle - angle)
+            if (diff < Math.PI) {
               midAngle = (angle + nextAngle) / 2
             } else {
-              // 跨越 0° 的情况
               midAngle = (angle + nextAngle + 2 * Math.PI) / 2
               if (midAngle > 2 * Math.PI) midAngle -= 2 * Math.PI
             }
@@ -707,19 +688,18 @@ Page({
             const textY = centerY + Math.sin(midAngle) * houseRadius
 
             ctx.setFontSize(size * 0.035)
-            ctx.setFillStyle('#e0e7ff') // slate-100
+            ctx.setFillStyle('#e0e7ff')
             ctx.setTextAlign('center')
             ctx.setTextBaseline('middle')
-            // 添加文字阴影增强可读性
             ctx.fillText(`${i + 1}`, textX, textY + 1)
-            ctx.setFillStyle('#93c5fd') // blue-300
+            ctx.setFillStyle('#93c5fd')
             ctx.fillText(`${i + 1}`, textX, textY)
           }
         }
 
         // 绘制上升点 (ASC) - 金色光晕
         if (chartData && chartData.ascendant) {
-          const ascAngle = (chartData.ascendant - 90) * Math.PI / 180
+          const ascAngle = (chartData.ascendant) * Math.PI / 180
           const ascX1 = centerX + Math.cos(ascAngle) * radiusOuter
           const ascY1 = centerY + Math.sin(ascAngle) * radiusOuter
           const ascX2 = centerX - Math.cos(ascAngle) * radiusOuter
@@ -786,7 +766,7 @@ Page({
 
         // 绘制中天 (MC) - 青色光晕
         if (chartData && chartData.midheaven) {
-          const mcAngle = (chartData.midheaven - 90) * Math.PI / 180
+          const mcAngle = (chartData.midheaven) * Math.PI / 180
           const mcX1 = centerX + Math.cos(mcAngle) * radiusOuter
           const mcY1 = centerY + Math.sin(mcAngle) * radiusOuter
           const mcX2 = centerX - Math.cos(mcAngle) * radiusOuter
@@ -854,7 +834,7 @@ Page({
         // 绘制行星（白色，带光晕和半透明背景）
         if (chartData && chartData.planets) {
           chartData.planets.forEach(planet => {
-            const angle = (planet.degree - 90) * Math.PI / 180
+            const angle = (planet.degree) * Math.PI / 180
             const planetRadius = (radiusInner + radiusCenter) / 2
             const x = centerX + Math.cos(angle) * planetRadius
             const y = centerY + Math.sin(angle) * planetRadius
@@ -886,39 +866,39 @@ Page({
           })
         }
 
-        // 绘制黄道十二宫符号（柔和白色，带光晕）- 从 DSC 轴开始顺时针排列
-        const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+        // ========== 星座符号 ==========
+        const zodiacSigns = ['♓', '♒', '♑', '♐', '♏', '♎', '♍', '♌', '♋', '♊', '♉', '♈']
+        const zodiacSymbolColors = [
+          '#8A2BE2', '#FD79A8', '#2D3436', '#00CEC9',
+          '#A29BFE', '#6C5CE7', '#073B4C', '#EF476F',
+          '#118AB2', '#06D6A0', '#FFD166', '#FF6B6B'
+        ]
 
-        // 从 DSC 轴（ASC+180°）开始，顺时针排列
-        // DSC 的角度 = ASC + 180°
-        let startAngleDeg = 0
-        if (chartData && chartData.ascendant !== undefined) {
-          startAngleDeg = (chartData.ascendant + 180) % 360
-        }
-
+        // 星座符号固定排列：从第一象限（右边，0°）开始，逆时针排列（倒序：双鱼→白羊）
         for (let i = 0; i < 12; i++) {
-          // 从 DSC 开始，顺时针增加 30°（实际角度递减，因为 -90° 偏移）
-          const signAngle = (startAngleDeg - i * 30 - 90) * Math.PI / 180
-          const signRadius = radiusOuter + size * 0.04
+          const signDeg = (i + 1) * 30  // 0°, 30°, 60°, ..., 330°
+          const signAngle = signDeg * Math.PI / 180
+          const signRadius = radiusOuter + size * 0.045
           const x = centerX + Math.cos(signAngle) * signRadius
           const y = centerY + Math.sin(signAngle) * signRadius
 
-          // 星座符号背景小圆点
+          // 星座符号背景
           ctx.beginPath()
-          ctx.arc(x, y, size * 0.02, 0, 2 * Math.PI)
-          ctx.setFillStyle('rgba(96, 165, 250, 0.15)')
+          ctx.arc(x, y, size * 0.022, 0, 2 * Math.PI)
+          ctx.setFillStyle('rgba(255, 255, 255, 0.06)')
           ctx.fill()
 
-          // 星座符号（柔和白色）
-          ctx.setFontSize(size * 0.045)
-          ctx.setFillStyle('#cbd5e1') // slate-300
+          // 星座符号
+          ctx.setFontSize(size * 0.048)
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
-          ctx.fillText(zodiacSigns[i], x, y)
 
-          // 星座符号光晕
-          ctx.setFontSize(size * 0.045)
-          ctx.setFillStyle('rgba(96, 165, 250, 0.3)')
+          // 阴影
+          ctx.setFillStyle('rgba(0, 0, 0, 0.4)')
+          ctx.fillText(zodiacSigns[i], x + 1, y + 1)
+
+          // 主体（柔和彩色）
+          ctx.setFillStyle(zodiacSymbolColors[i])
           ctx.fillText(zodiacSigns[i], x, y)
         }
 
@@ -950,6 +930,13 @@ Page({
 
         ctx.draw()
       }
+    })
+  },
+
+  // 跳转到输入页面
+  goToInput() {
+    wx.navigateTo({
+      url: '/pages/astrology-input/astrology-input'
     })
   }
 })
