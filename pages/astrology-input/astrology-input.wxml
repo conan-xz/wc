@@ -55,9 +55,10 @@
       <text class="form-label">出生地点 *</text>
       <view class="location-input-wrapper">
         <input
-          class=""
+          class="form-input"
           type="text"
           placeholder="输入城市名称"
+          placeholder-style="color: rgba(224, 231, 255, 0.5);"
           value="{{searchQuery}}"
           bind:input="onSearchInput"
         />

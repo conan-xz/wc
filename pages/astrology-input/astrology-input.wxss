@@ -58,7 +58,9 @@
 
 .picker {
   width: 100%;
-  padding: 24rpx 28rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 28rpx;
   border: 1rpx solid rgba(77, 128, 228, 0.3);
   border-radius: 16rpx;
   background: rgba(15, 23, 42, 0.6);
@@ -102,7 +104,9 @@
 
 .form-input {
   flex: 1;
-  padding: 24rpx 28rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 28rpx;
   border: 1rpx solid rgba(77, 128, 228, 0.3);
   border-radius: 16rpx;
   font-size: 28rpx;
@@ -112,31 +116,40 @@
   backdrop-filter: blur(10rpx);
 }
 
+.form-input::placeholder {
+  color: rgba(224, 231, 255, 0.5);
+}
+
 .form-input:focus {
   border-color: rgba(96, 165, 250, 0.6);
   box-shadow: 0 0 12rpx rgba(59, 130, 246, 0.3);
 }
 
 .search-btn {
-  padding: 24rpx 40rpx;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  flex-shrink: 0;
+  height: 80rpx;
+  line-height: 80rpx;
+  min-width: 140rpx;
+  padding: 0 32rpx;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   color: #fff;
-  border: 1rpx solid rgba(255, 255, 255, 0.4);
+  border: none;
   border-radius: 16rpx;
   font-size: 28rpx;
-  font-weight: 500;
+  font-weight: 600;
   box-shadow:
     0 4rpx 16rpx rgba(0, 0, 0, 0.3),
-    0 0 24rpx rgba(59, 130, 246, 0.4),
+    0 0 24rpx rgba(96, 165, 250, 0.5),
     inset 0 0 12rpx rgba(255, 255, 255, 0.2);
   transition: all 0.3s;
+  box-sizing: border-box;
 }
 
 .search-btn:active {
-  transform: translateY(2rpx);
+  transform: scale(0.96);
   box-shadow:
     0 2rpx 8rpx rgba(0, 0, 0, 0.2),
-    0 0 16rpx rgba(59, 130, 246, 0.3);
+    0 0 16rpx rgba(96, 165, 250, 0.3);
 }
 
 .city-results {
@@ -300,8 +313,10 @@
 .btn {
   display: block;
   width: 100%;
-  padding: 28rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.4);
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0;
+  border: none;
   border-radius: 16rpx;
   font-size: 32rpx;
   font-weight: bold;
@@ -312,19 +327,19 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   color: #fff;
   box-shadow:
     0 4rpx 16rpx rgba(0, 0, 0, 0.3),
-    0 0 24rpx rgba(59, 130, 246, 0.4),
-    inset 0 0 12rpx rgba(255, 255, 255, 0.2);
+    0 0 32rpx rgba(96, 165, 250, 0.6),
+    inset 0 0 16rpx rgba(255, 255, 255, 0.3);
 }
 
 .btn-primary:active {
-  transform: translateY(2rpx);
+  transform: scale(0.96);
   box-shadow:
     0 2rpx 8rpx rgba(0, 0, 0, 0.2),
-    0 0 16rpx rgba(59, 130, 246, 0.3);
+    0 0 20rpx rgba(96, 165, 250, 0.4);
 }
 
 .btn-block {
@@ -333,6 +348,8 @@
 }
 
 .btn-large {
-  padding: 36rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  padding: 0;
   font-size: 36rpx;
 }
