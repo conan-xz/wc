@@ -13,7 +13,11 @@ Page({
     birthInfo: null,
     chartData: null,
     isLoading: false,
-    isLoadingChart: false
+    isLoadingChart: false,
+    // 核心三星座数据
+    sunSign: { name: '未知', symbol: '?' },
+    moonSign: { name: '未知', symbol: '?' },
+    ascSign: { name: '未知', symbol: '?' }
   },
 
   onLoad() {
@@ -36,7 +40,17 @@ Page({
         // 如果有出生信息但没有星盘数据，则尝试加载
         this.loadChartData()
       } else if (birthInfo && chartData) {
-        // 如果已经有星盘数据，直接绘制
+        // 如果已经有星盘数据，更新核心三星座并绘制
+        const sunSign = this.getSunSign()
+        const moonSign = this.getMoonSign()
+        const ascSign = this.getAscSign()
+
+        this.setData({
+          sunSign,
+          moonSign,
+          ascSign
+        })
+
         setTimeout(() => {
           this.drawStarChart()
         }, 300)
@@ -78,6 +92,17 @@ Page({
       // 保存到本地存储
       wx.setStorageSync('chartData', chartData)
 
+      // 更新核心三星座
+      const sunSign = this.getSunSign()
+      const moonSign = this.getMoonSign()
+      const ascSign = this.getAscSign()
+
+      this.setData({
+        sunSign,
+        moonSign,
+        ascSign
+      })
+
       // 绘制星盘
       setTimeout(() => {
         this.drawStarChart()
@@ -113,7 +138,7 @@ Page({
   getSunSign() {
     const { chartData } = this.data
     if (!chartData || !chartData.planets) {
-      return { name: '未知', symbol: '?' }
+      return { name: '太阳', symbol: '☉' }
     }
 
     const sun = chartData.planets.find(p => p.englishName === 'Sun' || p.name === '太阳')
@@ -135,14 +160,14 @@ Page({
       { name: '双鱼座', symbol: '♓' }
     ]
 
-    return zodiacSigns[signIndex] || { name: '未知', symbol: '?' }
+    return zodiacSigns[signIndex] || { name: '太阳', symbol: '☉' }
   },
 
   // 新增：获取月亮星座
   getMoonSign() {
     const { chartData } = this.data
     if (!chartData || !chartData.planets) {
-      return { name: '未知', symbol: '?' }
+      return { name: '月亮', symbol: '☽' }
     }
 
     const moon = chartData.planets.find(p => p.englishName === 'Moon' || p.name === '月亮')
@@ -164,14 +189,14 @@ Page({
       { name: '双鱼座', symbol: '♓' }
     ]
 
-    return zodiacSigns[signIndex] || { name: '未知', symbol: '?' }
+    return zodiacSigns[signIndex] || { name: '月亮', symbol: '☽' }
   },
 
   // 新增：获取上升星座
   getAscSign() {
     const { chartData } = this.data
     if (!chartData || !chartData.ascendant) {
-      return { name: '未知', symbol: '?' }
+      return { name: '上升', symbol: '☊' }
     }
 
     const signIndex = Math.floor(chartData.ascendant / 30)
@@ -190,7 +215,7 @@ Page({
       { name: '双鱼座', symbol: '♓' }
     ]
 
-    return zodiacSigns[signIndex] || { name: '未知', symbol: '?' }
+    return zodiacSigns[signIndex] || { name: '上升', symbol: '☊' }
   },
 
   // 新增：绘制星盘
