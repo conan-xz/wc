@@ -231,11 +231,11 @@ Page({
         const ctx = wx.createCanvasContext('starChart', this)
         const size = Math.min(width, height)
         const centerX = size / 2
-        const centerY = size / 2
-        const radiusOuter = size * 0.42  // 减小外圆半径
+        const centerY = size / 2 * 1.1
+        const radiusOuter = size * 0.38  // 适当减小外圆半径，为外围符号留空间
         const radiusInner = size * 0.32
-        const radiusCenter = size * 0.20
-        const houseRadius = size * 0.37
+        const radiusCenter = size * 0.22
+        const houseRadius = size * 0.36
 
         const { chartData } = this.data
 
@@ -406,7 +406,7 @@ Page({
             const textX = centerX + Math.cos(midAngle) * houseRadius
             const textY = centerY + Math.sin(midAngle) * houseRadius
 
-            ctx.setFontSize(size * 0.035)
+            ctx.setFontSize(size * 0.042)
             ctx.setFillStyle('#e0e7ff')
             ctx.setTextAlign('center')
             ctx.setTextBaseline('middle')
@@ -464,9 +464,9 @@ Page({
           ctx.fill()
 
           // 绘制 ASC 标记（金色，带阴影）
-          const ascTextX = centerX + Math.cos(ascAngle) * (radiusOuter + size * 0.1)
-          const ascTextY = centerY + Math.sin(ascAngle) * (radiusOuter + size * 0.1)
-          ctx.setFontSize(size * 0.035)
+          const ascTextX = centerX + Math.cos(ascAngle) * (radiusOuter + size * 0.13)
+          const ascTextY = centerY + Math.sin(ascAngle) * (radiusOuter + size * 0.13)
+          ctx.setFontSize(size * 0.042)
           ctx.setFillStyle('#e0e7ff')
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
@@ -475,8 +475,8 @@ Page({
           ctx.fillText('ASC', ascTextX, ascTextY)
 
           // 绘制 DSC 标记（金色）
-          const dscTextX = centerX - Math.cos(ascAngle) * (radiusOuter + size * 0.1)
-          const dscTextY = centerY - Math.sin(ascAngle) * (radiusOuter + size * 0.1)
+          const dscTextX = centerX - Math.cos(ascAngle) * (radiusOuter + size * 0.13)
+          const dscTextY = centerY - Math.sin(ascAngle) * (radiusOuter + size * 0.13)
           ctx.setFillStyle('#e0e7ff')
           ctx.fillText('DSC', dscTextX, dscTextY + 1)
           ctx.setFillStyle('#fbbf24')
@@ -531,9 +531,9 @@ Page({
           ctx.fill()
 
           // 绘制 MC 标记（青色，带阴影）
-          const mcTextX = centerX + Math.cos(mcAngle) * (radiusOuter + size * 0.1)
-          const mcTextY = centerY + Math.sin(mcAngle) * (radiusOuter + size * 0.1)
-          ctx.setFontSize(size * 0.035)
+          const mcTextX = centerX + Math.cos(mcAngle) * (radiusOuter + size * 0.13)
+          const mcTextY = centerY + Math.sin(mcAngle) * (radiusOuter + size * 0.13)
+          ctx.setFontSize(size * 0.042)
           ctx.setFillStyle('#e0e7ff')
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
@@ -542,8 +542,8 @@ Page({
           ctx.fillText('MC', mcTextX, mcTextY)
 
           // 绘制 IC 标记（青色）
-          const icTextX = centerX - Math.cos(mcAngle) * (radiusOuter + size * 0.1)
-          const icTextY = centerY - Math.sin(mcAngle) * (radiusOuter + size * 0.1)
+          const icTextX = centerX - Math.cos(mcAngle) * (radiusOuter + size * 0.13)
+          const icTextY = centerY - Math.sin(mcAngle) * (radiusOuter + size * 0.13)
           ctx.setFillStyle('#e0e7ff')
           ctx.fillText('IC', icTextX, icTextY + 1)
           ctx.setFillStyle('#06b6d4')
@@ -559,14 +559,14 @@ Page({
             const y = centerY + Math.sin(angle) * planetRadius
 
             // 行星背景光晕（改用简单填充，不支持 createRadialGradient）
-            const planetGlowRadius = size * 0.035
+            const planetGlowRadius = size * 0.045
             ctx.beginPath()
             ctx.arc(x, y, planetGlowRadius, 0, 2 * Math.PI)
             ctx.setFillStyle('rgba(255, 255, 255, 0.1)')
             ctx.fill()
 
             // 行星符号
-            ctx.setFontSize(size * 0.052)
+            ctx.setFontSize(size * 0.065)
             ctx.setFillStyle('#ffffff')
             ctx.setTextAlign('center')
             ctx.setTextBaseline('middle')
@@ -657,18 +657,18 @@ Page({
         for (let i = 0; i < 12; i++) {
           const signDeg = (i + 1) * 30  // 0°, 30°, 60°, ..., 330°
           const signAngle = signDeg * Math.PI / 180
-          const signRadius = radiusOuter + size * 0.045
+          const signRadius = radiusOuter + size * 0.08
           const x = centerX + Math.cos(signAngle) * signRadius
           const y = centerY + Math.sin(signAngle) * signRadius
 
           // 星座符号背景
           ctx.beginPath()
-          ctx.arc(x, y, size * 0.022, 0, 2 * Math.PI)
+          ctx.arc(x, y, size * 0.03, 0, 2 * Math.PI)
           ctx.setFillStyle('rgba(255, 255, 255, 0.06)')
           ctx.fill()
 
           // 星座符号
-          ctx.setFontSize(size * 0.048)
+          ctx.setFontSize(size * 0.065)
           ctx.setTextAlign('center')
           ctx.setTextBaseline('middle')
 
