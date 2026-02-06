@@ -2,8 +2,7 @@
   "pages": [
     "pages/home/home",
     "pages/index/index",
-    "pages/astrology-input/astrology-input",
-    "pages/astrology-result/astrology-result"
+    "pages/astrology-input/astrology-input"
   ],
   "tabBar": {
     "color": "#999",

@@ -503,13 +503,6 @@ Page({
     })
   },
 
-  // 新增：跳转到星盘页面
-  goToChart() {
-    wx.navigateTo({
-      url: '/pages/astrology-result/astrology-result'
-    })
-  },
-
   // 连接云服务
   connectCloud() {
     if (this.data.connected) {
