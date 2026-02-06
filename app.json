@@ -5,10 +5,10 @@
     "pages/astrology-input/astrology-input"
   ],
   "tabBar": {
-    "color": "#999",
-    "selectedColor": "#667eea",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "color": "#93c5fd",
+    "selectedColor": "#60a5fa",
+    "backgroundColor": "#0f172a",
+    "borderStyle": "white",
     "position": "bottom",
     "list": [
       {
