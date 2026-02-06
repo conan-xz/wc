@@ -19,9 +19,9 @@
       },
       {
         "pagePath": "pages/index/index",
-        "text": "星盘",
-        "iconPath": "images/chat.png",
-        "selectedIconPath": "images/chat-active.png"
+        "text": "我的",
+        "iconPath": "images/user.png",
+        "selectedIconPath": "images/user-active.png"
       }
     ]
   },
