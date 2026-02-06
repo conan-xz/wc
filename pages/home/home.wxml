@@ -22,17 +22,17 @@
         <view class="sign-item">
           <text class="sign-label">太阳</text>
           <text class="sign-symbol">{{sunSign.symbol}}</text>
-          <text class="sign-name">{{sunSign.name}}</text>
+          <text class="sign-name">【{{sunSign.name}}】</text>
         </view>
         <view class="sign-item">
           <text class="sign-label">月亮</text>
           <text class="sign-symbol">{{moonSign.symbol}}</text>
-          <text class="sign-name">{{moonSign.name}}</text>
+          <text class="sign-name">【{{moonSign.name}}】</text>
         </view>
         <view class="sign-item">
           <text class="sign-label">上升</text>
           <text class="sign-symbol">{{ascSign.symbol}}</text>
-          <text class="sign-name">{{ascSign.name}}</text>
+          <text class="sign-name">【{{ascSign.name}}】</text>
         </view>
       </view>
     </view>

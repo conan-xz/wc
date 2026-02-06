@@ -129,7 +129,7 @@
 
 .sign-name {
   display: block;
-  font-size: 28rpx;
+  font-size: 24rpx;
   color: #fff;
   font-weight: 600;
   text-shadow: 0 0 10rpx rgba(96, 165, 250, 0.4);
@@ -375,8 +375,8 @@
 }
 
 .star-chart {
-  width: 500rpx;
-  height: 500rpx;
+  width: 600rpx;
+  height: 660rpx;
   background: transparent;
   border-radius: 16rpx;
   box-shadow:

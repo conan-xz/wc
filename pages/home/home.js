@@ -223,6 +223,7 @@ Page({
     const query = wx.createSelectorQuery().in(this)
     query.select('#starChart').boundingClientRect()
     query.exec((res) => {
+      console.log("res", res)
       if (res[0]) {
         const width = res[0].width
         const height = res[0].height
@@ -233,13 +234,13 @@ Page({
         const centerY = size / 2
         const radiusOuter = size * 0.42  // 减小外圆半径
         const radiusInner = size * 0.32
-        const radiusCenter = size * 0.25
+        const radiusCenter = size * 0.20
         const houseRadius = size * 0.37
 
         const { chartData } = this.data
 
         // 绘制星空背景
-        ctx.setFillStyle('#0f172a') // slate-900
+        //ctx.setFillStyle('#0f172a') // slate-900
         ctx.fillRect(0, 0, size, size)
 
         // 绘制深邃星云渐变
@@ -441,7 +442,7 @@ Page({
 
           // ASC 标记圆点（带光晕）
           ctx.beginPath()
-          const ascDotRadius = size * 0.035
+          const ascDotRadius = size * 0.015
           ctx.arc(ascX1, ascY1, ascDotRadius * 1.5, 0, 2 * Math.PI)
           ctx.setFillStyle('rgba(251, 191, 36, 0.3)')
           ctx.fill()
@@ -463,8 +464,8 @@ Page({
           ctx.fill()
 
           // 绘制 ASC 标记（金色，带阴影）
-          const ascTextX = centerX + Math.cos(ascAngle) * (radiusOuter + size * 0.06)
-          const ascTextY = centerY + Math.sin(ascAngle) * (radiusOuter + size * 0.06)
+          const ascTextX = centerX + Math.cos(ascAngle) * (radiusOuter + size * 0.1)
+          const ascTextY = centerY + Math.sin(ascAngle) * (radiusOuter + size * 0.1)
           ctx.setFontSize(size * 0.035)
           ctx.setFillStyle('#e0e7ff')
           ctx.setTextAlign('center')
@@ -474,8 +475,8 @@ Page({
           ctx.fillText('ASC', ascTextX, ascTextY)
 
           // 绘制 DSC 标记（金色）
-          const dscTextX = centerX - Math.cos(ascAngle) * (radiusOuter + size * 0.06)
-          const dscTextY = centerY - Math.sin(ascAngle) * (radiusOuter + size * 0.06)
+          const dscTextX = centerX - Math.cos(ascAngle) * (radiusOuter + size * 0.1)
+          const dscTextY = centerY - Math.sin(ascAngle) * (radiusOuter + size * 0.1)
           ctx.setFillStyle('#e0e7ff')
           ctx.fillText('DSC', dscTextX, dscTextY + 1)
           ctx.setFillStyle('#fbbf24')
@@ -508,7 +509,7 @@ Page({
 
           // MC 标记圆点（带光晕）
           ctx.beginPath()
-          const mcDotRadius = size * 0.035
+          const mcDotRadius = size * 0.015
           ctx.arc(mcX1, mcY1, mcDotRadius * 1.5, 0, 2 * Math.PI)
           ctx.setFillStyle('rgba(6, 182, 212, 0.3)')
           ctx.fill()
@@ -530,8 +531,8 @@ Page({
           ctx.fill()
 
           // 绘制 MC 标记（青色，带阴影）
-          const mcTextX = centerX + Math.cos(mcAngle) * (radiusOuter + size * 0.06)
-          const mcTextY = centerY + Math.sin(mcAngle) * (radiusOuter + size * 0.06)
+          const mcTextX = centerX + Math.cos(mcAngle) * (radiusOuter + size * 0.1)
+          const mcTextY = centerY + Math.sin(mcAngle) * (radiusOuter + size * 0.1)
           ctx.setFontSize(size * 0.035)
           ctx.setFillStyle('#e0e7ff')
           ctx.setTextAlign('center')
@@ -541,8 +542,8 @@ Page({
           ctx.fillText('MC', mcTextX, mcTextY)
 
           // 绘制 IC 标记（青色）
-          const icTextX = centerX - Math.cos(mcAngle) * (radiusOuter + size * 0.06)
-          const icTextY = centerY - Math.sin(mcAngle) * (radiusOuter + size * 0.06)
+          const icTextX = centerX - Math.cos(mcAngle) * (radiusOuter + size * 0.1)
+          const icTextY = centerY - Math.sin(mcAngle) * (radiusOuter + size * 0.1)
           ctx.setFillStyle('#e0e7ff')
           ctx.fillText('IC', icTextX, icTextY + 1)
           ctx.setFillStyle('#06b6d4')
