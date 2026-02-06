@@ -55,7 +55,7 @@
       <text class="form-label">出生地点 *</text>
       <view class="location-input-wrapper">
         <input
-          class="form-input"
+          class=""
           type="text"
           placeholder="输入城市名称"
           value="{{searchQuery}}"

@@ -370,307 +370,44 @@ Page({
   async generateChart(birthInfo) {
     wx.showLoading({ title: '生成星盘中...' })
 
-    // Define planet IDs for calculation (matching Swiss Ephemeris IDs)
-    const PLANET_IDS = [
-      { id: 0, name: 'Sun', chineseName: '太阳', symbol: '☉' },       // Sun
-      { id: 1, name: 'Moon', chineseName: '月亮', symbol: '☽' },     // Moon
-      { id: 2, name: 'Mercury', chineseName: '水星', symbol: '☿' },   // Mercury
-      { id: 3, name: 'Venus', chineseName: '金星', symbol: '♀' },    // Venus
-      { id: 4, name: 'Mars', chineseName: '火星', symbol: '♂' },     // Mars
-      { id: 5, name: 'Jupiter', chineseName: '木星', symbol: '♃' },  // Jupiter
-      { id: 6, name: 'Saturn', chineseName: '土星', symbol: '♄' },   // Saturn
-      { id: 7, name: 'Uranus', chineseName: '天王星', symbol: '♅' }, // Uranus
-      { id: 8, name: 'Neptune', chineseName: '海王星', symbol: '♆' },// Neptune
-      { id: 9, name: 'Pluto', chineseName: '冥王星', symbol: '♇' },  // Pluto
-      { id: 10, name: 'MeanNode', chineseName: '月北交点', symbol: '☊' }, // Mean Node
-      { id: 11, name: 'TrueNode', chineseName: '月南交点', symbol: '☋' } // True Node
-    ]
-
-    // Define house system codes
-    const HOUSE_SYSTEM_CODES = {
-      'placidus': 'P',
-      'koch': 'K',
-      'equal': 'E',
-      'campanus': 'C',
-      'regiomontanus': 'R',
-      'porphyrius': 'O',
-      'morinus': 'Q'
-    }
-
-    // Helper to convert to UTC date object
-    const toUTCDateObject = ({ year, month, day, hour, minute, timeZone }) => {
-      // Create a date object considering timezone
-      const localDate = new Date(year, month - 1, day, hour, minute, 0, 0)
-      const utcTime = localDate.getTime() - (timeZone * 60 * 60 * 1000)
-      const utcDate = new Date(utcTime)
-
-      return {
-        year: utcDate.getUTCFullYear(),
-        month: utcDate.getUTCMonth() + 1, // month is 0-indexed in JS
-        day: utcDate.getUTCDate(),
-        hour: utcDate.getUTCHours() + utcDate.getUTCMinutes() / 60
-      }
-    }
-
-    // Helper to calculate aspects
-    const calculateAspects = (planets) => {
-      const aspects = []
-      const aspectOrbs = {
-        'conjunction': { angle: 0, orb: 8 },
-        'opposition': { angle: 180, orb: 8 },
-        'trine': { angle: 120, orb: 8 },
-        'square': { angle: 90, orb: 8 },
-        'sextile': { angle: 60, orb: 6 },
-        'quincunx': { angle: 150, orb: 3 },
-        'semi-sextile': { angle: 30, orb: 2 },
-        'sesquiquadrate': { angle: 135, orb: 2 }
-      }
-
-      for (let i = 0; i < planets.length; i++) {
-        for (let j = i + 1; j < planets.length; j++) {
-          const planet1 = planets[i]
-          const planet2 = planets[j]
-
-          const diff = Math.min(
-            Math.abs(planet1.longitude - planet2.longitude),
-            360 - Math.abs(planet1.longitude - planet2.longitude)
-          )
-
-          for (const [aspectName, aspectConfig] of Object.entries(aspectOrbs)) {
-            if (diff <= aspectConfig.angle + aspectConfig.orb && diff >= aspectConfig.angle - aspectConfig.orb) {
-              aspects.push({
-                name: aspectName,
-                degree: diff,
-                planet1: planet1.name,
-                planet2: planet2.name
-              })
-              break
-            }
-          }
-        }
-      }
-
-      return aspects
-    }
-
     try {
-      // 连接到云服务计算星盘
-      const socketTask = await this.connectToAstrologyService()
+      // 引入占星计算工具
+      const AstrologyCalculator = require('../../utils/astrologyCalculator.js')
+      const calculator = new AstrologyCalculator()
 
       // 解析出生日期和时间
       const [year, month, day] = birthInfo.birthDate.split('-').map(Number)
       const [hour, minute] = birthInfo.birthTime.split(':').map(Number)
 
-      // Convert to UTC date object
-      const dateObj = toUTCDateObject({ year, month, day, hour, minute, timeZone: birthInfo.timeZone || 8 })
-
-      // Build planet requests
-      const planetRequests = PLANET_IDS.map(p => ({
-        func: 'calc',
-        args: [{
-          date: { gregorian: { terrestrial: dateObj } },
-          observer: {
-            ephemeris: 'swisseph',
-            geographic: { longitude: birthInfo.location.lng, latitude: birthInfo.location.lat, height: 0 }
-          },
-          body: {
-            id: p.id,
-            position: {}
-          }
-        }]
-      }))
-
-      // Julian day request
-      const juldayRequest = {
-        func: 'swe_julday',
-        args: [dateObj.year, dateObj.month, dateObj.day, dateObj.hour, 1]
-      }
-
-      // House system code
-      const houseSystemCode = HOUSE_SYSTEM_CODES['placidus'] || 'P'
-
-      const TIMEOUT = 30000
-
-      const planets = []
-      let julianDay = null
-      let housesReceived = false
-      let housesData = null
-
-      // 等待响应
-      return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error('计算超时'))
-          socketTask.close()
-        }, TIMEOUT)
-
-        // 监听消息
-        const handleMessage = (res) => {
-          clearTimeout(timeout)
-
-          try {
-            const result = JSON.parse(res.data)
-
-            // Check for Julian Day result
-            if (typeof result.result === 'number' || (result && !result.body && !result.house && !result.cusps)) {
-              const jd = typeof result === 'number' ? result : (result.julianDay || result.jd)
-              if (jd && jd > 2000000) { // Valid Julian Day range
-                julianDay = jd
-
-                // Now request house cusps
-                const housesRequest = {
-                  type: 'swisseph',
-                  data: {
-                    func: 'swe_houses',
-                    args: [julianDay, birthInfo.location.lat, birthInfo.location.lng, houseSystemCode]
-                  }                  
-                }
-
-                socketTask.send({
-                  data: JSON.stringify([
-                    housesRequest
-                  ])
-                })
-                return
-              }
-            }
-
-            // Check for planet result
-            if (result && result.body && result.body.position && result.body.position.longitude) {
-              const planetId = parseInt(result.body.id)
-              const planetInfo = PLANET_IDS.find(p => p.id === planetId)
-              if (planetInfo) {
-                // 检查是否已经收到过这颗行星
-                const existingPlanet = planets.find(p => p.name === planetInfo.name)
-                if (existingPlanet) {
-                  return
-                }
-
-                const longitude = result.body.position.longitude.decimalDegree ||
-                                  result.body.position.longitude
-
-                planets.push({
-                  name: planetInfo.name,
-                  chineseName: planetInfo.chineseName,
-                  symbol: planetInfo.symbol,
-                  longitude: longitude,
-                  degree: longitude // alias for chart.vue compatibility
-                })
-              }
-            }
-
-            // Check for house result
-            if (result && (result.cusps || result.house)) {
-              housesReceived = true
-              const cusps = result.cusps || result.house
-
-              // swe_houses returns cusps[0] as unused, cusps[1-12] are house cusps
-              // ascmc[0] = ASC, ascmc[1] = MC
-              let houses = []
-              let ascendant = 0
-              let midheaven = 0
-
-              if (Array.isArray(cusps)) {
-                // If cusps has 13 elements, skip index 0
-                if (cusps.length === 13) {
-                  houses = cusps.slice(1, 13)
-                } else if (cusps.length === 12) {
-                  houses = cusps
-                } else {
-                  houses = cusps.slice(0, 12)
-                }
-              }
-
-              if (result.ascmc) {
-                ascendant = result.ascmc[0] || houses[0] || 0
-                midheaven = result.ascmc[1] || houses[9] || 0
-              } else {
-                ascendant = houses[0] || 0
-                midheaven = houses[9] || 0
-              }
-
-              housesData = { houses, ascendant, midheaven }
-              console.log("housesData", housesData)
-            }
-
-            // Check if we have all data
-            if (planets.length === PLANET_IDS.length && housesReceived && housesData) {
-              clearTimeout(timeout)
-              socketTask.offMessage(handleMessage)
-
-              // Calculate aspects
-              const aspects = calculateAspects(planets)
-
-              // Build final chart data compatible with chart.vue
-              const chartData = {
-                planets: planets.map(p => ({
-                  name: p.chineseName,
-                  englishName: p.name,
-                  symbol: p.symbol,
-                  degree: p.longitude,
-                  longitude: p.longitude
-                })),
-                houses: housesData.houses,
-                ascendant: housesData.ascendant,
-                midheaven: housesData.midheaven,
-                aspects: aspects,
-                julianDay: julianDay
-              }
-
-              // 保存星盘数据
-              wx.setStorageSync('chartData', chartData)
-
-              wx.hideLoading()
-              wx.showToast({
-                title: '星盘生成成功',
-                icon: 'success'
-              })
-
-              // 跳转到星盘展示页面
-              wx.redirectTo({
-                url: '/pages/astrology-result/astrology-result'
-              })
-
-              resolve(chartData)
-            }
-          } catch (e) {
-            reject(e)
-          } finally {
-            if (planets.length >= PLANET_IDS.length && !housesReceived && !housesData) {
-              // Only close if we haven't resolved yet
-              socketTask.close()
-            }
-          }
-        }
-
-        // 监听消息
-        socketTask.onMessage(handleMessage)
-
-        // 监听失败
-        socketTask.onError((err) => {
-          clearTimeout(timeout)
-          socketTask.offMessage(handleMessage)
-          reject(err)
-          socketTask.close()
-        })
-
-        // 发送计算请求
-        planetRequests.forEach(request => {
-          socketTask.send({
-            data: JSON.stringify({
-              "type": "swisseph",
-              "data": [request] // 注意：这里必须还是数组格式，哪怕只有一个元素
-            })
-          });
-        })
-
-        // 2. 单独发送 julday 请求
-        socketTask.send({
-          data: JSON.stringify({
-            "type": "swisseph",
-            "data": [juldayRequest] // 包装成单元素数组
-          })
-        })
+      // 调用计算方法
+      const chartData = await calculator.calculateChart({
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        lat: birthInfo.location.lat,
+        lng: birthInfo.location.lng,
+        houseSystem: 'placidus',
+        timeZone: birthInfo.timeZone || 8
       })
+
+      // 保存星盘数据
+      wx.setStorageSync('chartData', chartData)
+
+      wx.hideLoading()
+      wx.showToast({
+        title: '星盘生成成功',
+        icon: 'success',
+        duration: 1500
+      })
+
+      // 等待 toast 显示完成后跳转
+      setTimeout(() => {
+        wx.reLaunch({
+          url: '/pages/home/home'
+        })
+      }, 1600)
     } catch (error) {
       console.error('生成星盘失败:', error)
       wx.hideLoading()
@@ -679,44 +416,6 @@ Page({
         icon: 'none'
       })
     }
-  },
-
-  /**
-   * 连接到占星服务
-   */
-  connectToAstrologyService() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const { socketTask } = await wx.cloud.connectContainer({
-          config: {
-            env: 'prod-5gg03znv016787f1'  // 使用当前环境
-          },
-          service: 'express-v2qc',  // 占星计算服务
-          path: '/ws'
-        })
-
-        // 等待连接建立
-        await new Promise((innerResolve, innerReject) => {
-          const openTimeout = setTimeout(() => {
-            innerReject(new Error('连接建立超时'))
-          }, 10000)
-
-          socketTask.onOpen(() => {
-            clearTimeout(openTimeout)
-            innerResolve()
-          })
-
-          socketTask.onError((err) => {
-            clearTimeout(openTimeout)
-            innerReject(err)
-          })
-        })
-
-        resolve(socketTask)
-      } catch (error) {
-        reject(error)
-      }
-    })
   },
 
   /**

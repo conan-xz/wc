@@ -64,18 +64,6 @@
         bind:tap="goToChart"
       ></canvas>
     </view>
-
-    <!-- 操作按钮 -->
-    <view class="action-buttons">
-      <view class="action-btn" bind:tap="goToInput">
-        <text class="btn-icon">✏️</text>
-        <text class="btn-text">编辑信息</text>
-      </view>
-      <view class="action-btn primary" bind:tap="goToChart">
-        <text class="btn-icon">⭐</text>
-        <text class="btn-text">查看星盘</text>
-      </view>
-    </view>
   </view>
 
   <!-- 没有出生信息时：显示欢迎界面 -->
