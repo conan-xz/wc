@@ -233,9 +233,9 @@ Page({
         const centerX = size / 2
         const centerY = size / 2 * 1.1
         const radiusOuter = size * 0.38  // 适当减小外圆半径，为外围符号留空间
-        const radiusInner = size * 0.32
-        const radiusCenter = size * 0.22
-        const houseRadius = size * 0.36
+        const radiusInner = size * 0.28
+        const radiusCenter = size * 0.18
+        const houseRadius = size * 0.33
 
         const { chartData } = this.data
 
