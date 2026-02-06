@@ -64,6 +64,49 @@
         bind:tap="goToChart"
       ></canvas>
     </view>
+
+    <!-- 行星运势分析 -->
+    <view class="analysis-section" wx:if="{{chartData && fortuneAnalysis.planets.length > 0}}">
+      <view class="section-title">✨ 行星运势分析</view>
+      <view class="analysis-list">
+        <view class="analysis-item" wx:for="{{fortuneAnalysis.planets}}" wx:key="index">
+          <view class="analysis-header">
+            <text class="planet-symbol">{{item.symbol}}</text>
+            <text class="planet-name">{{item.name}}</text>
+          </view>
+          <view class="analysis-content">{{item.analysis}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 宫位运势分析 -->
+    <view class="analysis-section" wx:if="{{chartData && fortuneAnalysis.houses.length > 0}}">
+      <view class="section-title">🏠 宫位运势分析</view>
+      <view class="analysis-list">
+        <view class="analysis-item" wx:for="{{fortuneAnalysis.houses}}" wx:key="index">
+          <view class="analysis-header">
+            <text class="house-number">{{item.number}}</text>
+            <text class="house-name">{{item.name}}</text>
+          </view>
+          <view class="analysis-content">{{item.analysis}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 相位运势分析 -->
+    <view class="analysis-section" wx:if="{{chartData && fortuneAnalysis.aspects.length > 0}}">
+      <view class="section-title">💫 相位运势分析</view>
+      <view class="analysis-list">
+        <view class="analysis-item" wx:for="{{fortuneAnalysis.aspects}}" wx:key="index">
+          <view class="analysis-header">
+            <text class="aspect-planet">{{item.planet1}}</text>
+            <text class="aspect-symbol">{{item.symbol}}</text>
+            <text class="aspect-planet">{{item.planet2}}</text>
+          </view>
+          <view class="analysis-content">{{item.analysis}}</view>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- 没有出生信息时：显示欢迎界面 -->
