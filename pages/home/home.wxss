@@ -48,7 +48,7 @@
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background: radial-gradient(circle, #9333ea 0%, #581c87 100%);
+  background: radial-gradient(circle,rgb(218, 196, 239) 0%,rgb(165, 87, 225) 100%);
   display: flex;
   align-items: center;
   justify-content: center;

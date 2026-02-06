@@ -582,6 +582,66 @@ Page({
               }
             }
           })
+
+          // 绘制相位线
+          if (chartData.aspects && chartData.aspects.length > 0) {
+            chartData.aspects.forEach(aspect => {
+              const planet1 = chartData.planets.find(p => p.englishName === aspect.planet1 || p.name === aspect.planet1)
+              const planet2 = chartData.planets.find(p => p.englishName === aspect.planet2 || p.name === aspect.planet2)
+
+              if (planet1 && planet2) {
+                const angle1 = planet1.degree * Math.PI / 180
+                const angle2 = planet2.degree * Math.PI / 180
+                const radius = (radiusInner + radiusCenter) / 2
+                const x1 = centerX + Math.cos(angle1) * radius
+                const y1 = centerY + Math.sin(angle1) * radius
+                const x2 = centerX + Math.cos(angle2) * radius
+                const y2 = centerY + Math.sin(angle2) * radius
+
+                // 根据相位类型设置线条样式
+                let color, lineWidth, opacity
+                switch (aspect.name) {
+                  case 'conjunction':
+                    color = '#fbbf24' // 金色 - 合相
+                    lineWidth = 2.5
+                    opacity = 0.8
+                    break
+                  case 'opposition':
+                    color = '#06b6d4' // 青色 - 对冲
+                    lineWidth = 2
+                    opacity = 0.7
+                    break
+                  case 'trine':
+                    color = '#10b981' // 绿色 - 三分相
+                    lineWidth = 2
+                    opacity = 0.7
+                    break
+                  case 'square':
+                    color = '#ef4444' // 红色 - 四分相
+                    lineWidth = 2
+                    opacity = 0.7
+                    break
+                  case 'sextile':
+                    color = '#3b82f6' // 蓝色 - 六分相
+                    lineWidth = 1.5
+                    opacity = 0.6
+                    break
+                  default:
+                    color = '#6b7280' // 灰色 - 其他相位
+                    lineWidth = 1
+                    opacity = 0.5
+                }
+
+                ctx.beginPath()
+                ctx.moveTo(x1, y1)
+                ctx.lineTo(x2, y2)
+                ctx.setStrokeStyle(`rgba(${parseInt(color.slice(1, 3), 16)}, ${parseInt(color.slice(3, 5), 16)}, ${parseInt(color.slice(5, 7), 16)}, ${opacity})`)
+                ctx.setLineWidth(lineWidth)
+                ctx.setLineCap('round')
+                ctx.stroke()
+              }
+            })
+          }
         }
 
         // ========== 星座符号 ==========
