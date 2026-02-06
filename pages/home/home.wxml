@@ -6,7 +6,7 @@
     <view class="profile-card">
       <view class="profile-header">
         <view class="avatar">
-          <text class="avatar-icon">{{getSunSignSymbol()}}</text>
+          <text class="avatar-icon">🧙‍♀️</text>
         </view>
         <view class="profile-info">
           <text class="profile-name">我的星盘</text>
