@@ -62,7 +62,7 @@
           value="{{searchQuery}}"
           bind:input="onSearchInput"
         />
-        <button class="search-btn" bind:tap="searchCity">搜索</button>
+        <button class="search-btn" bind:tap="searchCity">定位</button>
       </view>
     </view>
 
