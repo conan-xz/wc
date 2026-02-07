@@ -18,7 +18,7 @@ class AstrologyCalculator {
   /**
    * 计算星盘数据
    */
-  async calculateChart(params) {
+  async calculateChart(birthInfo) {
     this._planets = []
 
     const {
@@ -31,7 +31,7 @@ class AstrologyCalculator {
       lng,
       houseSystem = 'placidus',
       timeZone = 8
-    } = params
+    } = birthInfo
 
     const TIMEOUT = CHART_CONFIG.timeout
     let julianDay = null
