@@ -9,8 +9,8 @@
           <text class="avatar-icon">🧙‍♀️</text>
         </view>
         <view class="profile-info">
-          <text class="profile-name">我的星盘</text>
-          <text class="profile-date">{{formatBirthInfo()}}</text>
+          <text class="profile-name">🌟星主🌟</text>
+          <text class="profile-date">{{birthInfoFormat}}</text>
         </view>
         <view class="edit-btn" bind:tap="goToInput">
           <text class="edit-icon">✏️</text>

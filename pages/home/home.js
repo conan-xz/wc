@@ -12,6 +12,7 @@ Page({
     // 新增星盘相关数据
     hasBirthInfo: false,
     birthInfo: null,
+    birthInfoFormat: null,
     chartData: null,
     isLoading: false,
     isLoadingChart: false,
@@ -36,12 +37,15 @@ Page({
     try {
       const birthInfo = wx.getStorageSync('birthInfo')
       const chartData = wx.getStorageSync('chartData')
-
       this.setData({
         hasBirthInfo: !!birthInfo,
         birthInfo: birthInfo,
         chartData: chartData
       })
+
+      if (birthInfo) {
+        this.formatBirthInfo(birthInfo)
+      }
 
       if (birthInfo && !chartData) {
         // 如果有出生信息但没有星盘数据，则尝试加载
@@ -132,13 +136,14 @@ Page({
   },
 
   // 新增：格式化出生信息
-  formatBirthInfo() {
-    const { birthInfo } = this.data
+  formatBirthInfo(birthInfo) {
     if (!birthInfo) return ''
 
     const { birthDate, birthTime, location } = birthInfo
     const city = location?.city || '未知地点'
-    return `${birthDate} ${birthTime} · ${city}`
+    this.setData({
+      birthInfoFormat: `${birthDate} ${birthTime} · ${city}`
+    })
   },
 
   // 新增：获取太阳星座符号

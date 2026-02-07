@@ -21,7 +21,6 @@ Page({
     try {
       const birthInfo = wx.getStorageSync('birthInfo')
       const chartData = wx.getStorageSync('chartData')
-
       this.setData({
         hasBirthInfo: !!birthInfo,
         birthInfo: birthInfo,
@@ -178,14 +177,20 @@ Page({
   // 使用历史记录
   useHistory(e) {
     const item = e.currentTarget.dataset.item
+    // 保存历史记录到 birthInfo
     wx.setStorageSync('birthInfo', item)
+    // 清空旧的星盘数据，让 home 页面重新计算
+    wx.removeStorageSync('chartData')
 
-    // 重新加载出生信息
-    this.loadBirthInfo()
-
-    wx.showToast({
-      title: '已切换到该记录',
-      icon: 'success'
+    // 跳转到 home 页
+    wx.reLaunch({
+      url: '/pages/home/home',
+      success: () => {
+        wx.showToast({
+          title: '已切换到该记录',
+          icon: 'success'
+        })
+      }
     })
   },
 
