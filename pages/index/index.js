@@ -40,7 +40,21 @@ Page({
   // 加载历史记录
   loadHistory() {
     try {
-      const history = wx.getStorageSync('birthHistory') || []
+      const stored = wx.getStorageSync('birthHistory')
+      let history = []
+
+      if (typeof stored === 'string' && stored) {
+        try {
+          history = JSON.parse(stored)
+        } catch (e) {
+          history = []
+        }
+      } else if (Array.isArray(stored)) {
+        history = stored
+      }
+
+      // 确保最终是数组
+      history = Array.isArray(history) ? history : []
       this.setData({ history })
     } catch (e) {
       console.error('加载历史记录失败:', e)

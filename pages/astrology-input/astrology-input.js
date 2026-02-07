@@ -16,7 +16,8 @@ Page({
     timeZone: null,
     timeZoneName: '',
     currentDate: '',
-    history: []
+    history: [],
+    searchSuccess: false
   },
 
   onLoad() {
@@ -142,7 +143,8 @@ Page({
             lat: result.lat,
             lng: result.lng
           },
-          cityResults: []
+          cityResults: [],
+          searchSuccess: true
         })
 
         wx.showToast({
